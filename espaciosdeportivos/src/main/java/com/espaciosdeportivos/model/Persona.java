@@ -3,6 +3,7 @@ package com.espaciosdeportivos.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.*;
 
 @Entity
 @Table(name = "persona")
@@ -57,4 +58,6 @@ public class Persona {
     //k
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Comentario> comentario;
+
+    //prueba
 }

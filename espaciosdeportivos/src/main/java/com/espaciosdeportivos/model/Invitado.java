@@ -18,10 +18,8 @@ public class Invitado extends Persona {
         return verificado;
     }
 
-    public void setVerificado(Boolean verificado) {
-        this.verificado = verificado;
-    }
-
+  
+     //k
     @OneToMany(mappedBy = "invitado", cascade = CascadeType.ALL, orphanRemoval = true) 
     private List<Qr> qr;
 }

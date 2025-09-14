@@ -53,8 +53,8 @@ public class AreaDeportiva {
     @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancha> cancha;
 
-    //@ManyToOne
-    //@JoinColumn(name = "id_administrador")
-    //private Administrador administrador;
+    @ManyToOne
+    @JoinColumn(name = "id_administrador", referencedColumnName = "id_persona")
+    private Administrador administrador;
     
 }

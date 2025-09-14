@@ -2,8 +2,15 @@ package com.espaciosdeportivos.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "usuario_control")
 @PrimaryKeyJoinColumn(name = "id_us_control")
@@ -21,40 +28,7 @@ public class UsuarioControl extends Persona {
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 
-    public UsuarioControl() {}
-
-    public String getEstadoOperativo() {
-        return estadoOperativo;
-    }
-
-    public void setEstadoOperativo(String estadoOperativo) {
-        this.estadoOperativo = estadoOperativo;
-    }
-
-    public LocalDateTime getHoraInicioTurno() {
-        return horaInicioTurno;
-    }
-
-    public void setHoraInicioTurno(LocalDateTime horaInicioTurno) {
-        this.horaInicioTurno = horaInicioTurno;
-    }
-
-    public LocalDateTime getHoraFinTurno() {
-        return horaFinTurno;
-    }
-
-    public void setHoraFinTurno(LocalDateTime horaFinTurno) {
-        this.horaFinTurno = horaFinTurno;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
+    
     //K
     @OneToMany(mappedBy = "usuarioControl", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Qr> qr;

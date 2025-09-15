@@ -3,7 +3,7 @@ package com.espaciosdeportivos.model;
 
 import lombok.*;
 import jakarta.persistence.*;
-import java.util.List;
+//import java.util.List;
 
 @Getter
 @Setter
@@ -58,8 +58,8 @@ public class Cancha {
     @JoinColumn(name = "id_areadeportiva")
     private AreaDeportiva areaDeportiva;
 
-    @OneToMany(mappedBy = "cancha")
-    private List<dispone> equipamiento;
+    //@OneToMany(mappedBy = "cancha")
+    //private List<dispone> equipamiento;
 
     //K
     /*@OneToMany(mappedBy = "cancha")

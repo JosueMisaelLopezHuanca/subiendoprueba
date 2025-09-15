@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class sepracticaa {
+public class sepractica {
 
     @EmbeddedId
     private sepracticaId id;

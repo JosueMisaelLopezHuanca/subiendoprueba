@@ -57,7 +57,7 @@ public class Reserva {
     //J
     // Relación con Cancha (a través de la tabla intermedia "incluye")
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<incluyee> canchasIncluidas;
+    private List<incluye> canchasIncluidas;
     //J
     /*// Relación con Invitado (a través de la tabla intermedia "participa")
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)

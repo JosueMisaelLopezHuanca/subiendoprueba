@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class incluyee {
+public class incluye {
 
     @EmbeddedId
     private incluyeId id;

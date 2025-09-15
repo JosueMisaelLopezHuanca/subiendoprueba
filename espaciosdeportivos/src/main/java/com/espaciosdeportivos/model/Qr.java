@@ -38,9 +38,10 @@ public class Qr {
     private UsuarioControl usuarioControl;
 
     // Relación con Reserva -> se agrega cuando definas esa entidad
-    // @ManyToOne
-    // @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
-    // private Reserva reserva;
+    //J
+    @ManyToOne
+    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
+    private Reserva reserva;
 
     @ManyToOne
     @JoinColumn(name = "id_invitado", referencedColumnName = "id_persona")

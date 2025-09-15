@@ -28,11 +28,11 @@ public class Cancelacion {
 
     @Column(name = "razon_cancelacion", nullable = false, length = 500)
     private String razon_cancelacion;
-
+    //J
     // Relación con Reserva
-    /*@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "id_reserva", nullable = false)
-    private Reserva reserva; */
+    private Reserva reserva;
 
     // Relacin con Cliente
     @ManyToOne

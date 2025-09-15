@@ -1,6 +1,5 @@
 package com.espaciosdeportivos.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,21 +9,24 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Incluye {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    /*
-    @ManyToOne
-    @JoinColumn(name = "id_cancha", nullable = false)
-    private Cancha cancha;
-    */
+@Builder
+public class incluye {
+
+    @EmbeddedId
+    private incluyeId id;
 
     @ManyToOne
+    @MapsId("idCancha")
+    @JoinColumn(name = "id_cancha", nullable = false)
+    private Cancha cancha;
+
+    @ManyToOne
+    @MapsId("idReserva")
     @JoinColumn(name = "id_reserva", nullable = false)
     private Reserva reserva;
 
     @ManyToOne
+    @MapsId("idDisciplina")
     @JoinColumn(name = "id_disciplina", nullable = false)
     private Disciplina disciplina;
 }

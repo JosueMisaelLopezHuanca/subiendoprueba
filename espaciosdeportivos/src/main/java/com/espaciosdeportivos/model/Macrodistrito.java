@@ -25,6 +25,6 @@ public class Macrodistrito {
     private String descripcion;
 
     @OneToMany(mappedBy = "macrodistrito", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Zona> Zona;  
+    private List<Zona> zona;  
 
 }

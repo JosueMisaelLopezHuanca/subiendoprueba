@@ -15,12 +15,12 @@ public class sepractica {
     @EmbeddedId
     private sepracticaId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idCancha") // vincula con la clave compuesta
     @JoinColumn(name = "id_cancha", nullable = false)
     private Cancha cancha;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idDisciplina") // vincula con la clave compuesta
     @JoinColumn(name = "id_disciplina", nullable = false)
     private Disciplina disciplina;

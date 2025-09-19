@@ -20,19 +20,23 @@ public class CancelacionDTO implements Serializable {
 
     private Long idCancelacion;
 
+    @NotBlank(message = "El motivo de cancelación es obligatorio")
+    @Size(min = 5, max = 255, message = "El motivo debe tener entre 5 y 255 caracteres")
+    private String motivo;
+
     @NotNull(message = "La fecha de cancelación es obligatoria")
     private LocalDate fechaCancelacion;
 
     @NotNull(message = "La hora de cancelación es obligatoria")
     private LocalTime horaCancelacion;
 
-    @NotBlank(message = "La razón de cancelación es obligatoria")
-    @Size(max = 500, message = "La razón no puede exceder los 500 caracteres")
-    private String razonCancelacion;
-
-    @NotNull(message = "El ID de la reserva es obligatorio")
-    private Long idReserva;
+    @NotNull(message = "El estado de la cancelación es obligatorio")
+    private Boolean estado;
 
     @NotNull(message = "El ID del cliente es obligatorio")
     private Long idCliente;
+
+    @NotNull(message = "El ID de la reserva es obligatorio")
+    private Long idReserva;
 }
+

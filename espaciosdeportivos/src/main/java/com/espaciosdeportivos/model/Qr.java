@@ -16,20 +16,19 @@ public class Qr {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_qr")
-    private Long id_qr;
+    private Long idQr;
 
     @Column(name = "codigo_qr", nullable = false, unique = true, length = 200)
-    private String codigo_qr;
+    private String codigoQr;
 
     @Column(name = "fecha_generacion", nullable = false)
-    private LocalDateTime fecha_generacion;
+    private LocalDateTime fechaGeneracion;
 
     @Column(name = "fecha_expiracion", nullable = false)
-    private LocalDateTime fecha_expiracion;
+    private LocalDateTime fechaExpiracion;
 
     @Column(name = "estado", nullable = false)
-    private boolean estado;
-
+    private Boolean estado; // ← cambiado de boolean a Boolean
 
     @Column(name = "descripcion", length = 255)
     private String descripcion;
@@ -38,8 +37,6 @@ public class Qr {
     @JoinColumn(name = "id_us_control", referencedColumnName = "id_persona")
     private UsuarioControl usuarioControl;
 
-    // Relación con Reserva -> se agrega cuando definas esa entidad
-    //J
     @ManyToOne
     @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
     private Reserva reserva;

@@ -2,7 +2,7 @@ package com.espaciosdeportivos.model;
 
 import lombok.*;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,27 +16,25 @@ public class Comentario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_comentario")
-    private Long id_comentario;
+    private Long idComentario;
 
-    @Column(name = "comentario", nullable = false, length = 500)
-    private String comentario;
+    @Column(name = "contenido", nullable = false, length = 500)
+    private String contenido;
 
-    @Column(name = "calificacion")
+    @Column(name = "calificacion", nullable = false)
     private Integer calificacion;
 
     @Column(name = "fecha", nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
-    // Relación con Persona (autor del comentario)
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
     @ManyToOne
-    @JoinColumn(name = "id_persona")
+    @JoinColumn(name = "id_persona", referencedColumnName = "id_persona")
     private Persona persona;
 
-    //K
-    //realcion con cancha
     @ManyToOne
-    @JoinColumn(name = "id_cancha")
+    @JoinColumn(name = "id_cancha", referencedColumnName = "id_cancha")
     private Cancha cancha;
-
-  
 }

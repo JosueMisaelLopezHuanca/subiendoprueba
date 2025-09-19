@@ -28,7 +28,7 @@ public class Qr {
     private LocalDateTime fechaExpiracion;
 
     @Column(name = "estado", nullable = false)
-    private Boolean estado; // ← cambiado de boolean a Boolean
+    private Boolean estado; // 
 
     @Column(name = "descripcion", length = 255)
     private String descripcion;
@@ -44,4 +44,6 @@ public class Qr {
     @ManyToOne
     @JoinColumn(name = "id_invitado", referencedColumnName = "id_persona")
     private Invitado invitado;
+
+    //k
 }

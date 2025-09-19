@@ -39,4 +39,6 @@ public class Cancelacion {
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
+
+    //k
 }

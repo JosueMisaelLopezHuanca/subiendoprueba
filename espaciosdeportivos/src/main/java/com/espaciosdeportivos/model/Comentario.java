@@ -37,4 +37,6 @@ public class Comentario {
     @ManyToOne
     @JoinColumn(name = "id_cancha", referencedColumnName = "id_cancha")
     private Cancha cancha;
+
+    //k
 }

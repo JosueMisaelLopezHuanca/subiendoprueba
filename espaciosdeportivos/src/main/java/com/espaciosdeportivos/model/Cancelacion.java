@@ -18,27 +18,27 @@ public class Cancelacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cancelacion")
-    private Long id_cancelacion;
+    private Long idCancelacion;
 
     @Column(name = "fecha_cancelacion", nullable = false)
-    private LocalDate fecha_cancelacion;
+    private LocalDate fechaCancelacion;
 
     @Column(name = "hora_cancelacion", nullable = false)
-    private LocalTime hora_cancelacion;
+    private LocalTime horaCancelacion;
 
-    @Column(name = "razon_cancelacion", nullable = false, length = 500)
-    private String razon_cancelacion;
-    //k
-    // Relación con Reserva
-    // 1:1 con Reserva 
+    @Column(name = "motivo", nullable = false, length = 500)
+    private String motivo;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
     @OneToOne
     @JoinColumn(name = "id_reserva", nullable = false, unique = true)
     private Reserva reserva;
 
-    // Relacin con Cliente
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
-   
+    //k
 }

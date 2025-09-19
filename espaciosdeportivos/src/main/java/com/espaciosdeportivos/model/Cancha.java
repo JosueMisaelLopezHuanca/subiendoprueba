@@ -1,12 +1,8 @@
 package com.espaciosdeportivos.model;
 
-
 import lombok.*;
-
-import java.util.List;
-
 import jakarta.persistence.*;
-//import java.util.List;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,16 +12,17 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "cancha")
 public class Cancha {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cancha")
-    private Long id_cancha;
+    private Long idCancha;
 
     @Column(name = "nombre_cancha", nullable = false, length = 100)
     private String nombre;
 
     @Column(name = "costo_hora", nullable = false)
-    private Double costo_hora;
+    private Double costoHora;
 
     @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
@@ -37,13 +34,13 @@ public class Cancha {
     private String mantenimiento;
 
     @Column(name = "hora_inicio")
-    private String hora_inicio;
+    private String horaInicio;
 
     @Column(name = "hora_fin")
-    private String hora_fin;
+    private String horaFin;
 
     @Column(name = "tipo_superficie", nullable = false, length = 100)
-    private String tipo_superficie;
+    private String tipoSuperficie;
 
     @Column(name = "tamaño", nullable = false, length = 100)
     private String tamaño;
@@ -55,23 +52,13 @@ public class Cancha {
     private String cubierta;
 
     @Column(name = "url_imagen", length = 800)
-    private String url_imagen;
+    private String urlImagen;
 
     @ManyToOne
     @JoinColumn(name = "id_areadeportiva")
     private AreaDeportiva areaDeportiva;
 
     @OneToMany(mappedBy = "cancha", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comentario> comentario; 
-
-    //@OneToMany(mappedBy = "cancha")
-    //private List<dispone> equipamiento;
-
-    //K
-    /*@OneToMany(mappedBy = "cancha")
-    private List<califica> comentario;
-    //K
-    @OneToMany(mappedBy = "cancha", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<califica> calificaciones;*/
+    private List<Comentario> comentario;
 
 }

@@ -37,9 +37,6 @@ public class Comentario {
     @ManyToOne
     @JoinColumn(name = "id_cancha")
     private Cancha cancha;
-    
-    // Relación con Califica (para M:N con Cancha)
-    /*@OneToMany(mappedBy = "comentario")
-    private List<califica> cancha; */
 
+  
 }

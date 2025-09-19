@@ -27,8 +27,9 @@ public class Qr {
     @Column(name = "fecha_expiracion", nullable = false)
     private LocalDateTime fecha_expiracion;
 
-    @Column(name = "estado", nullable = false, length = 20)
-    private String estado;
+    @Column(name = "estado", nullable = false)
+    private boolean estado;
+
 
     @Column(name = "descripcion", length = 255)
     private String descripcion;

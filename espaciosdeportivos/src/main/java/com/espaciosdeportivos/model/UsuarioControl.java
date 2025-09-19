@@ -1,7 +1,8 @@
 package com.espaciosdeportivos.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
@@ -16,15 +17,19 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "id_us_control")
 public class UsuarioControl extends Persona {
 
+    @NotNull
     @Column(name = "estado_operativo", nullable = false, length = 50)
     private String estadoOperativo;
 
+    @NotNull
     @Column(name = "hora_inicio_turno", nullable = false)
-    private LocalDateTime horaInicioTurno;
+    private LocalTime horaInicioTurno;
 
+    @NotNull
     @Column(name = "hora_fin_turno", nullable = false)
-    private LocalDateTime horaFinTurno;
+    private LocalTime horaFinTurno;
 
+    @NotNull
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 

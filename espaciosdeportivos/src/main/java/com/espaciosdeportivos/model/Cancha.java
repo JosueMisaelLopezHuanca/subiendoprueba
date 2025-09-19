@@ -2,6 +2,9 @@ package com.espaciosdeportivos.model;
 
 
 import lombok.*;
+
+import java.util.List;
+
 import jakarta.persistence.*;
 //import java.util.List;
 
@@ -57,6 +60,9 @@ public class Cancha {
     @ManyToOne
     @JoinColumn(name = "id_areadeportiva")
     private AreaDeportiva areaDeportiva;
+
+    @OneToMany(mappedBy = "cancha", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentario; 
 
     //@OneToMany(mappedBy = "cancha")
     //private List<dispone> equipamiento;

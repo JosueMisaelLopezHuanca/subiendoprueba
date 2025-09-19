@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ import jakarta.persistence.*;
 @PrimaryKeyJoinColumn(name = "id_invitado")
 public class Invitado extends Persona {
 
+    @NotNull
     @Column(name = "verificado", nullable = false)
     private Boolean verificado;
 

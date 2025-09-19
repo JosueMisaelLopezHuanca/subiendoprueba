@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -15,9 +16,11 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "id_administrador")
 public class Administrador extends Persona {
 
+    @NotNull
     @Column(name = "cargo", nullable = false, length = 100)
     private String cargo;
 
+    @NotNull
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 

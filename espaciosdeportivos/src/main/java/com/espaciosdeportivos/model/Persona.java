@@ -1,6 +1,8 @@
 package com.espaciosdeportivos.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.*;
@@ -21,19 +23,30 @@ public class Persona {
     @Column(name = "id_persona")
     private Long idPersona;
 
-    @Column(name = "fecha_nacimiento")
+    @NotNull
+    @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
-
+    
+    @NotNull
+    @Column(nullable = false)
     private String nombre;
 
+    @NotNull
     @Column(name = "a_paterno")
     private String aPaterno;
 
-    @Column(name = "a_materno")
+    @Column(name = "a_materno", nullable = false)
     private String aMaterno;
 
+    @NotNull
+    @Column(nullable = false)
     private String telefono;
+
+    @Email
+    @NotNull
+    @Column(nullable = false)
     private String email;
+    
     private String ci;
 
     

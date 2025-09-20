@@ -10,54 +10,43 @@ import com.espaciosdeportivos.repository.AdministradorRepository;
 import com.espaciosdeportivos.service.IAreaDeportivaService;
 import com.espaciosdeportivos.validation.AreaDeportivaValidator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
+@RequiredArgsConstructor
+@Transactional
+public class AreaDeportivaServiceimpl implements IAreaDeportivaService {
+
     private final AreaDeportivaRepository areaDeportivaRepository;
     private final ZonaRepository zonaRepository;
     private final AdministradorRepository administradorRepository;
     private final AreaDeportivaValidator areaDeportivaValidator;
 
-    @Autowired
-    public AreaDeportivaServiceImpl(
-            AreaDeportivaRepository areaDeportivaRepository,
-            ZonaRepository zonaRepository,
-            AdministradorRepository administradorRepository,
-            AreaDeportivaValidator areaDeportivaValidator
-    ) {
-        this.areaDeportivaRepository = areaDeportivaRepository;
-        this.zonaRepository = zonaRepository;
-        this.administradorRepository = administradorRepository;
-        this.areaDeportivaValidator = areaDeportivaValidator;
-    }
-
     @Override
     @Transactional(readOnly = true)
-    public List<AreaDeportivaDTO> obtenerTodasLasAreas() {
-        return areaDeportivaRepository.findAll()
+    public List<AreaDeportivaDTO> obtenerTodasLasAreasDeportivas() {
+        return areaDeportivaRepository.findByEstadoTrue()
                 .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::toDto)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AreaDeportivaDTO obtenerAreaPorId(Long id) {
-        AreaDeportiva area = areaDeportivaRepository.findById(id)
+    public AreaDeportivaDTO obtenerAreaDeportivaPorId(Long id) {
+        AreaDeportiva area = areaDeportivaRepository.findByIdAreaDeportivaAndEstadoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + id));
-        return convertToDTO(area);
+        return toDto(area);
     }
 
     @Override
-    @Transactional
-    public AreaDeportivaDTO crearArea(@Valid AreaDeportivaDTO dto) {
+    public AreaDeportivaDTO crearAreaDeportiva(@Valid AreaDeportivaDTO dto) {
         areaDeportivaValidator.validarArea(dto);
 
         Zona zona = zonaRepository.findById(dto.getIdZona())
@@ -65,19 +54,20 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
         Administrador admin = administradorRepository.findById(dto.getIdAdministrador())
                 .orElseThrow(() -> new RuntimeException("Administrador no encontrado con ID: " + dto.getIdAdministrador()));
 
-        AreaDeportiva area = convertToEntity(dto);
-        area.setZona(zona);
-        area.setAdministrador(admin);
+        AreaDeportiva entidad = toEntity(dto);
+        entidad.setIdAreaDeportiva(null);
+        entidad.setEstado(Boolean.TRUE);
+        entidad.setZona(zona);
+        entidad.setAdministrador(admin);
 
-        AreaDeportiva guardada = areaDeportivaRepository.save(area);
-        return convertToDTO(guardada);
+        return toDto(areaDeportivaRepository.save(entidad));
     }
 
     @Override
-    @Transactional
-    public AreaDeportivaDTO actualizarArea(Long id, @Valid AreaDeportivaDTO dto) {
-        AreaDeportiva existente = areaDeportivaRepository.findById(id)
+    public AreaDeportivaDTO actualizarAreaDeportiva(Long id, @Valid AreaDeportivaDTO dto) {
+        AreaDeportiva existente = areaDeportivaRepository.findByIdAreaDeportivaAndEstadoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + id));
+
         areaDeportivaValidator.validarArea(dto);
 
         Zona zona = zonaRepository.findById(dto.getIdZona())
@@ -89,61 +79,65 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
         existente.setDescripcionArea(dto.getDescripcion_area());
         existente.setEmailArea(dto.getEmailArea());
         existente.setTelefonoArea(dto.getTelefonoArea());
-        existente.setHoraInicioArea(dto.getHoraInicioArea().toString());
-        existente.setHoraFinArea(dto.getHoraFinArea().toString());
+        existente.setHoraInicioArea(dto.getHoraInicioArea() != null ? dto.getHoraInicioArea().toString() : null);
+        existente.setHoraFinArea(dto.getHoraFinArea() != null ? dto.getHoraFinArea().toString() : null);
         existente.setEstadoArea(dto.getEstadoArea());
         existente.setUrlImagen(dto.getUrlImagen());
         existente.setLatitud(dto.getLatitud());
         existente.setLongitud(dto.getLongitud());
+        existente.setEstado(dto.getEstado());
         existente.setZona(zona);
         existente.setAdministrador(admin);
 
-        AreaDeportiva actualizada = areaDeportivaRepository.save(existente);
-        return convertToDTO(actualizada);
+        return toDto(areaDeportivaRepository.save(existente));
     }
 
     @Override
-    @Transactional
-    public AreaDeportivaDTO eliminarArea(Long id) {
-        AreaDeportiva existente = areaDeportivaRepository.findById(id)
+    public AreaDeportivaDTO eliminarAreaDeportiva(Long id) {
+        AreaDeportiva existente = areaDeportivaRepository.findByIdAreaDeportivaAndEstadoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + id));
-        areaDeportivaRepository.delete(existente);
-        return convertToDTO(existente);
+        existente.setEstado(Boolean.FALSE); // baja lógica
+        return toDto(areaDeportivaRepository.save(existente));
     }
 
-    // Métodos privados de conversión
-    private AreaDeportivaDTO convertToDTO(AreaDeportiva area) {
+    // ---------- mapping ----------
+    private AreaDeportivaDTO toDto(AreaDeportiva a) {
         return AreaDeportivaDTO.builder()
-                .idAreadeportiva(area.getIdAreaDeportiva())
-                .nombreArea(area.getNombreArea())
-                .descripcion_area(area.getDescripcionArea())
-                .emailArea(area.getEmailArea())
-                .telefonoArea(area.getTelefonoArea())
-                // Convierte String a LocalTime si es necesario
-                .horaInicioArea(area.getHoraInicioArea() != null ? java.time.LocalTime.parse(area.getHoraInicioArea()) : null)
-                .horaFinArea(area.getHoraFinArea() != null ? java.time.LocalTime.parse(area.getHoraFinArea()) : null)
-                .estadoArea(area.getEstadoArea())
-                .urlImagen(area.getUrlImagen())
-                .latitud(area.getLatitud())
-                .longitud(area.getLongitud())
-                .idZona(area.getZona() != null ? area.getZona().getIdZona() : null)
-                .idAdministrador(area.getAdministrador() != null ? area.getAdministrador().getIdPersona() : null)
+                .idAreadeportiva(a.getIdAreaDeportiva())
+                .nombreArea(a.getNombreArea())
+                .descripcion_area(a.getDescripcionArea())
+                .emailArea(a.getEmailArea())
+                .telefonoArea(a.getTelefonoArea())
+                .horaInicioArea(parseTime(a.getHoraInicioArea()))
+                .horaFinArea(parseTime(a.getHoraFinArea()))
+                .estadoArea(a.getEstadoArea())
+                .urlImagen(a.getUrlImagen())
+                .latitud(a.getLatitud())
+                .longitud(a.getLongitud())
+                .idZona(a.getZona() != null ? a.getZona().getIdZona() : null)
+                .idAdministrador(a.getAdministrador() != null ? a.getAdministrador().getIdPersona() : null)
+                .estado(a.getEstado())
                 .build();
     }
 
-    private AreaDeportiva convertToEntity(AreaDeportivaDTO dto) {
+    private AreaDeportiva toEntity(AreaDeportivaDTO d) {
         return AreaDeportiva.builder()
-                .idAreaDeportiva(dto.getIdAreadeportiva())
-                .nombreArea(dto.getNombreArea())
-                .descripcionArea(dto.getDescripcion_area())
-                .emailArea(dto.getEmailArea())
-                .telefonoArea(dto.getTelefonoArea())
-                .horaInicioArea(dto.getHoraInicioArea() != null ? dto.getHoraInicioArea().toString() : null)
-                .horaFinArea(dto.getHoraFinArea() != null ? dto.getHoraFinArea().toString() : null)
-                .estadoArea(dto.getEstadoArea())
-                .urlImagen(dto.getUrlImagen())
-                .latitud(dto.getLatitud())
-                .longitud(dto.getLongitud())
+                .idAreaDeportiva(d.getIdAreadeportiva())
+                .nombreArea(d.getNombreArea())
+                .descripcionArea(d.getDescripcion_area())
+                .emailArea(d.getEmailArea())
+                .telefonoArea(d.getTelefonoArea())
+                .horaInicioArea(d.getHoraInicioArea() != null ? d.getHoraInicioArea().toString() : null)
+                .horaFinArea(d.getHoraFinArea() != null ? d.getHoraFinArea().toString() : null)
+                .estadoArea(d.getEstadoArea())
+                .urlImagen(d.getUrlImagen())
+                .latitud(d.getLatitud())
+                .longitud(d.getLongitud())
+                .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
                 .build();
+    }
+
+    private LocalTime parseTime(String t) {
+        return (t != null && !t.isBlank()) ? LocalTime.parse(t) : null;
     }
 }

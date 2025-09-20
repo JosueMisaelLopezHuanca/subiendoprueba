@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import com.espaciosdeportivos.dto.disponeDTO;
 import com.espaciosdeportivos.model.dispone;
 
-public class IdisponeService {
+public interface IdisponeService {
     disponeDTO asociarCanchaAEspacio(disponeDTO iddisponeDTO);
     disponeDTO asociarCanchaDeEspacio(Long idCancha, Long idEquipamiento);
     List<disponeDTO> obtenerequipamientosPorIdCancha(Long idCancha);

@@ -16,4 +16,10 @@ public class ZonaDTO implements Serializable{
     
     @Size(max = 400, message = "La descripción no puede tener más de 400 caracteres")   
     private String descripcion;
+
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estado;
+
+    @NotNull(message = "El id del macrodistrito es obligatorio")
+    private Long idMacrodistrito;
 }

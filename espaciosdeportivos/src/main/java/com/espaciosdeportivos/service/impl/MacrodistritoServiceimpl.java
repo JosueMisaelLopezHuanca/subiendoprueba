@@ -1,11 +1,8 @@
 package com.espaciosdeportivos.service.impl;
 
-
 import com.espaciosdeportivos.dto.MacrodistritoDTO;
-import com.espaciosdeportivos.dto.QrDTO;
 import com.espaciosdeportivos.model.Macrodistrito;
 import com.espaciosdeportivos.repository.MacrodistritoRepository;
-
 import com.espaciosdeportivos.service.IMacrodistritoService;
 import com.espaciosdeportivos.validation.MacrodistritoValidator;
 
@@ -14,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MacrodistritoServiceimpl implements IMacrodistritoService {
+
     private final MacrodistritoRepository macrodistritoRepository;
     private final MacrodistritoValidator macrodistritoValidator;
 
@@ -32,70 +29,81 @@ public class MacrodistritoServiceimpl implements IMacrodistritoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Macrodistrito> obtenerTodosLosMacrodistritos() {
+    public List<MacrodistritoDTO> obtenerTodosLosMacrodistritos() {
         return macrodistritoRepository.findByEstadoTrue()
                 .stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public MacrodistritoDTO obtenerMacrodistritoPorId(Long idMacrodistrito) {
-        Macrodistrito macrodistrito = macrodistritoRepository.findById(idMacrodistrito)
+        Macrodistrito macrodistrito = macrodistritoRepository.findByIdMacrodistritoAndEstadoTrue(idMacrodistrito)
                 .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + idMacrodistrito));
         return convertToDTO(macrodistrito);
     }
+
     @Override
     @Transactional
-    public MacrodistritoDTO crearMacrodistrito(@Valid MacrodistritoDTO macrodistritoDTO) {
-        macrodistritoValidator.validarMacrodistrito(macrodistritoDTO);
+    public MacrodistritoDTO crearMacrodistrito(MacrodistritoDTO dto) {
+        macrodistritoValidator.validarMacrodistrito(dto);
+        // opcional: reforzar unicidad
+        // if (macrodistritoRepository.existsByNombreIgnoreCase(dto.getNombre())) {
+        //     throw new MacrodistritoValidator.BusinessException("Ya existe un macrodistrito con ese nombre.");
+        // }
 
-        Macrodistrito macrodistrito = convertToEntity(macrodistritoDTO);
+        Macrodistrito entidad = convertToEntity(dto);
+        entidad.setIdMacrodistrito(null);
+        entidad.setEstado(Boolean.TRUE);
 
-        Macrodistrito macrodistritoGuardado = macrodistritoRepository.save(macrodistrito);
-        return convertToDTO(macrodistritoGuardado);
+        return convertToDTO(macrodistritoRepository.save(entidad));
     }
 
     @Override
     @Transactional
-    public MacrodistritoDTO actualizarMacrodistrito(Long idMacrodistrito, MacrodistritoDTO macrodistritoDTO) {
-        Macrodistrito macrodistritoExistente = macrodistritoRepository.findById(idMacrodistrito)
-                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + idMacrodistrito));
+    public MacrodistritoDTO actualizarMacrodistrito(Long id, MacrodistritoDTO dto) {
+        Macrodistrito existente = macrodistritoRepository.findByIdMacrodistritoAndEstadoTrue(id)
+                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + id));
 
-        macrodistritoValidator.validarMacrodistrito(macrodistritoDTO);
+        macrodistritoValidator.validarMacrodistrito(dto);
+        // opcional: unicidad ignorando el mismo id
+        // macrodistritoRepository.findByNombreIgnoreCase(dto.getNombre())
+        //         .filter(m -> !m.getIdMacrodistrito().equals(id))
+        //         .ifPresent(m -> { throw new MacrodistritoValidator.BusinessException("Ya existe un macrodistrito con ese nombre."); });
 
-        macrodistritoExistente.setNombre(macrodistritoDTO.getNombre());
-        macrodistritoExistente.setDescripcion(macrodistritoDTO.getDescripcion());
+        existente.setNombre(dto.getNombre());
+        existente.setDescripcion(dto.getDescripcion());
+        existente.setEstado(dto.getEstado());
 
-        Macrodistrito macrodistritoActualizado = macrodistritoRepository.save(macrodistritoExistente);
-        return convertToDTO(macrodistritoActualizado);
+        return convertToDTO(macrodistritoRepository.save(existente));
     }
 
     @Override
     @Transactional
-    public MacrodistritoDTO eliminarMacrodistrito(Long idMacrodistrito) {
-        Macrodistrito macrodistritoExistente = macrodistritoRepository.findById(idMacrodistrito)
-                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + idMacrodistrito));
-
-        Macrodistrito macrodistritoEliminado = macrodistritoRepository.save(macrodistritoExistente);
-
-        return convertToDTO(macrodistritoEliminado);
+    public MacrodistritoDTO eliminarMacrodistrito(Long id) {
+        Macrodistrito existente = macrodistritoRepository.findByIdMacrodistritoAndEstadoTrue(id)
+                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + id));
+        existente.setEstado(Boolean.FALSE);
+        return convertToDTO(macrodistritoRepository.save(existente));
     }
 
-    private MacrodistritoDTO convertToDTO(Macrodistrito macrodistrito) {
+    // --------- mapping ----------
+    private MacrodistritoDTO convertToDTO(Macrodistrito m) {
         return MacrodistritoDTO.builder()
-                .idMacrodistrito(macrodistrito.getIdMacrodistrito())
-                .nombre(macrodistrito.getNombre())
-                .descripcion(macrodistrito.getDescripcion())
+                .idMacrodistrito(m.getIdMacrodistrito())
+                .nombre(m.getNombre())
+                .descripcion(m.getDescripcion())
+                .estado(m.getEstado())
                 .build();
     }
 
-    private Macrodistrito convertToEntity(MacrodistritoDTO dto) {
+    private Macrodistrito convertToEntity(MacrodistritoDTO d) {
         return Macrodistrito.builder()
-                .idMacrodistrito(dto.getIdMacrodistrito())
-                .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
+                .idMacrodistrito(d.getIdMacrodistrito())
+                .nombre(d.getNombre())
+                .descripcion(d.getDescripcion())
+                .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
                 .build();
     }
 }

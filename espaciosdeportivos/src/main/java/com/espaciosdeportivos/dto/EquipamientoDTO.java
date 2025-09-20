@@ -25,4 +25,7 @@ public class EquipamientoDTO implements Serializable {
     private String estado;
 
     private String urlImagen;
+
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estadobool;
 }

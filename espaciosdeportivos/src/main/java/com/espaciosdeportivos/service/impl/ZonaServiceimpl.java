@@ -1,91 +1,105 @@
 package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.ZonaDTO;
+import com.espaciosdeportivos.model.Macrodistrito;
 import com.espaciosdeportivos.model.Zona;
+import com.espaciosdeportivos.repository.MacrodistritoRepository;
 import com.espaciosdeportivos.repository.ZonaRepository;
 import com.espaciosdeportivos.service.IZonaService;
 import com.espaciosdeportivos.validation.ZonaValidator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class ZonaServiceImpl implements IZonaService {
-    private final ZonaRepository zonaRepository;
-    private final ZonaValidator zonaValidator;
+@RequiredArgsConstructor
+@Transactional
 
-    @Autowired
-    public ZonaServiceImpl(ZonaRepository zonaRepository, ZonaValidator zonaValidator) {
-        this.zonaRepository = zonaRepository;
-        this.zonaValidator = zonaValidator;
-    }
+public class ZonaServiceimpl implements IZonaService {
+    private final ZonaRepository zonaRepository;
+    private final MacrodistritoRepository macrodistritoRepository;
+    private final ZonaValidator zonaValidator;
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> obtenerTodasLasZonas() {
-        return zonaRepository.findAll()
+    public List<ZonaDTO> obtenerTodasLasZonas() {
+        return zonaRepository.findByEstadoTrue()
                 .stream()
-                .map(Zona::getNombre)
-                .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public ZonaDTO obtenerZonaPorId(Long idZona) {
-        Zona zona = zonaRepository.findById(idZona)
+        Zona zona = zonaRepository.findByIdZonaAndEstadoTrue(idZona)
                 .orElseThrow(() -> new RuntimeException("Zona no encontrada con ID: " + idZona));
         return convertToDTO(zona);
     }
 
     @Override
-    @Transactional
-    public ZonaDTO crearZona(@Valid ZonaDTO zonaDTO) {
-        zonaValidator.validarZona(zonaDTO);
-        Zona zona = convertToEntity(zonaDTO);
-        Zona guardada = zonaRepository.save(zona);
-        return convertToDTO(guardada);
+    public ZonaDTO crearZona(@Valid ZonaDTO dto) {
+        zonaValidator.validarZona(dto);
+
+        Macrodistrito macro = macrodistritoRepository.findById(dto.getIdMacrodistrito())
+                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + dto.getIdMacrodistrito()));
+
+        Zona entidad = toEntity(dto, macro);
+        entidad.setIdZona(null);
+        entidad.setEstado(Boolean.TRUE);
+
+        return convertToDTO(zonaRepository.save(entidad));
     }
 
     @Override
-    @Transactional
-    public ZonaDTO actualizarZona(Long idZona, @Valid ZonaDTO zonaDTO) {
-        Zona existente = zonaRepository.findById(idZona)
+    public ZonaDTO actualizarZona(Long idZona, @Valid ZonaDTO dto) {
+        Zona existente = zonaRepository.findByIdZonaAndEstadoTrue(idZona)
                 .orElseThrow(() -> new RuntimeException("Zona no encontrada con ID: " + idZona));
-        zonaValidator.validarZona(zonaDTO);
-        existente.setNombre(zonaDTO.getNombre());
-        existente.setDescripcion(zonaDTO.getDescripcion());
-        Zona actualizada = zonaRepository.save(existente);
-        return convertToDTO(actualizada);
+
+        zonaValidator.validarZona(dto);
+
+        // Permitir cambiar de macrodistrito si el dto lo trae
+        Macrodistrito macro = macrodistritoRepository.findById(dto.getIdMacrodistrito())
+                .orElseThrow(() -> new RuntimeException("Macrodistrito no encontrado con ID: " + dto.getIdMacrodistrito()));
+
+        existente.setNombre(dto.getNombre());
+        existente.setDescripcion(dto.getDescripcion());
+        existente.setEstado(dto.getEstado());
+        existente.setMacrodistrito(macro);
+
+        return convertToDTO(zonaRepository.save(existente));
     }
 
     @Override
-    @Transactional
     public ZonaDTO eliminarZona(Long idZona) {
-        Zona existente = zonaRepository.findById(idZona)
+        Zona existente = zonaRepository.findByIdZonaAndEstadoTrue(idZona)
                 .orElseThrow(() -> new RuntimeException("Zona no encontrada con ID: " + idZona));
-        zonaRepository.delete(existente);
-        return convertToDTO(existente);
+        existente.setEstado(Boolean.FALSE);
+        return convertToDTO(zonaRepository.save(existente));
     }
 
-    // Métodos privados de conversión
-    private ZonaDTO convertToDTO(Zona zona) {
+    // ---------- mapping ----------
+    private ZonaDTO convertToDTO(Zona z) {
         return ZonaDTO.builder()
-                .idZona(zona.getIdZona())
-                .nombre(zona.getNombre())
-                .descripcion(zona.getDescripcion())
+                .idZona(z.getIdZona())
+                .nombre(z.getNombre())
+                .descripcion(z.getDescripcion())
+                .estado(z.getEstado())
+                .idMacrodistrito(z.getMacrodistrito() != null ? z.getMacrodistrito().getIdMacrodistrito() : null)
                 .build();
     }
 
-    private Zona convertToEntity(ZonaDTO dto) {
+    private Zona toEntity(ZonaDTO d, Macrodistrito macro) {
         return Zona.builder()
-                .idZona(dto.getIdZona())
-                .nombre(dto.getNombre())
-                .descripcion(dto.getDescripcion())
+                .idZona(d.getIdZona())
+                .nombre(d.getNombre())
+                .descripcion(d.getDescripcion())
+                .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
+                .macrodistrito(macro)
                 .build();
     }
 }

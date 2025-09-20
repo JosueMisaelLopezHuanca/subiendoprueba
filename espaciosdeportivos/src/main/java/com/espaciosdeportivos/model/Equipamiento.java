@@ -26,8 +26,11 @@ public class Equipamiento {
     @Column(name ="descripcion" , length = 400)
     private String descripcion;
 
-    @Column(name ="estado" ,nullable = false)
+    @Column(name ="estado_equipamiento" ,nullable = false)
     private String estado;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estadobool;
 
     @Column(name ="url_imagen" , length = 800)
     private String urlimagen;

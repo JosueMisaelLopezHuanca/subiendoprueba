@@ -28,6 +28,10 @@ public class Zona {
     @JoinColumn(name = "id_macrodistrito")
     private Macrodistrito macrodistrito;
 
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
+
     @OneToMany(mappedBy = "zona", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AreaDeportiva> areaDeportiva;
     

@@ -55,4 +55,7 @@ public class AreaDeportivaDTO implements Serializable{
     @Positive(message = "El ID del administrador debe ser un valor positivo")   
     private Long idAdministrador;
 
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estado;
+
 }

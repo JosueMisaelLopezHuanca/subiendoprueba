@@ -23,8 +23,13 @@ public class CanchaDTO implements Serializable {
     @NotNull(message = "La capacidad es obligatoria")
     @Positive(message = "La capacidad debe ser un valor positivo")
     private Integer capacidad;
+
     @NotBlank(message = "El estado es obligatorio")
     private String estado;
+
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estadobool;
+
     @NotBlank(message = "El mantenimiento es obligatorio")
     private String mantenimiento;
 
@@ -40,7 +45,7 @@ public class CanchaDTO implements Serializable {
     private String tipoSuperficie;
 
     @NotBlank(message = "El tamaño es obligatorio")
-    private String tamaño;
+    private String tamano;
 
     @NotBlank(message = "La iluminación es obligatoria")
     private String iluminacion;
@@ -54,5 +59,6 @@ public class CanchaDTO implements Serializable {
     @NotNull(message = "El id del área deportiva es obligatorio")
     @Positive(message = "El id del área deportiva debe ser un valor positivo")  
     private Long idAreadeportiva;
+    
     
 }

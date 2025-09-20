@@ -8,68 +8,59 @@ import com.espaciosdeportivos.repository.AreaDeportivaRepository;
 import com.espaciosdeportivos.service.ICanchaService;
 import com.espaciosdeportivos.validation.CanchaValidator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class CanchaServiceImpl implements ICanchaService {
+@RequiredArgsConstructor
+@Transactional
+public class CanchaServiceimpl implements ICanchaService {
+
     private final CanchaRepository canchaRepository;
     private final AreaDeportivaRepository areaDeportivaRepository;
     private final CanchaValidator canchaValidator;
 
-    @Autowired
-    public CanchaServiceImpl(
-            CanchaRepository canchaRepository,
-            AreaDeportivaRepository areaDeportivaRepository,
-            CanchaValidator canchaValidator
-    ) {
-        this.canchaRepository = canchaRepository;
-        this.areaDeportivaRepository = areaDeportivaRepository;
-        this.canchaValidator = canchaValidator;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<CanchaDTO> obtenerTodasLasCanchas() {
-        return canchaRepository.findAll()
+        return canchaRepository.findByEstadoboolTrue()
                 .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::toDto)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public CanchaDTO obtenerCanchaPorId(Long id) {
-        Cancha cancha = canchaRepository.findById(id)
+        Cancha cancha = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
-        return convertToDTO(cancha);
+        return toDto(cancha);
     }
 
     @Override
-    @Transactional
     public CanchaDTO crearCancha(@Valid CanchaDTO dto) {
         canchaValidator.validarCancha(dto);
 
         AreaDeportiva area = areaDeportivaRepository.findById(dto.getIdAreadeportiva())
                 .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + dto.getIdAreadeportiva()));
 
-        Cancha cancha = convertToEntity(dto);
-        cancha.setAreaDeportiva(area);
+        Cancha entidad = toEntity(dto);
+        entidad.setIdCancha(null);
+        entidad.setEstadobool(Boolean.TRUE);
+        entidad.setAreaDeportiva(area);
 
-        Cancha guardada = canchaRepository.save(cancha);
-        return convertToDTO(guardada);
+        return toDto(canchaRepository.save(entidad));
     }
 
     @Override
-    @Transactional
     public CanchaDTO actualizarCancha(Long id, @Valid CanchaDTO dto) {
-        Cancha existente = canchaRepository.findById(id)
+        Cancha existente = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
+
         canchaValidator.validarCancha(dto);
 
         AreaDeportiva area = areaDeportivaRepository.findById(dto.getIdAreadeportiva())
@@ -79,64 +70,65 @@ public class CanchaServiceImpl implements ICanchaService {
         existente.setCostoHora(dto.getCostoHora());
         existente.setCapacidad(dto.getCapacidad());
         existente.setEstado(dto.getEstado());
+        existente.setEstadobool(dto.getEstadobool());
         existente.setMantenimiento(dto.getMantenimiento());
         existente.setHoraInicio(dto.getHoraInicio());
         existente.setHoraFin(dto.getHoraFin());
         existente.setTipoSuperficie(dto.getTipoSuperficie());
-        existente.setTamaño(dto.getTamaño());
+        existente.setTamano(dto.getTamano());
         existente.setIluminacion(dto.getIluminacion());
         existente.setCubierta(dto.getCubierta());
         existente.setUrlImagen(dto.getUrlImagen());
         existente.setAreaDeportiva(area);
 
-        Cancha actualizada = canchaRepository.save(existente);
-        return convertToDTO(actualizada);
+        return toDto(canchaRepository.save(existente));
     }
 
     @Override
-    @Transactional
     public CanchaDTO eliminarCancha(Long id) {
-        Cancha existente = canchaRepository.findById(id)
+        Cancha existente = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
-        canchaRepository.delete(existente);
-        return convertToDTO(existente);
+        existente.setEstadobool(Boolean.FALSE); // baja lógica
+        return toDto(canchaRepository.save(existente));
     }
 
-    // Métodos privados de conversión
-    private CanchaDTO convertToDTO(Cancha cancha) {
+    // --------- mapping ----------
+    private CanchaDTO toDto(Cancha c) {
         return CanchaDTO.builder()
-                .idCancha(cancha.getIdCancha())
-                .nombre(cancha.getNombre())
-                .costoHora(cancha.getCostoHora())
-                .capacidad(cancha.getCapacidad())
-                .estado(cancha.getEstado())
-                .mantenimiento(cancha.getMantenimiento())
-                .horaInicio(cancha.getHoraInicio())
-                .horaFin(cancha.getHoraFin())
-                .tipoSuperficie(cancha.getTipoSuperficie())
-                .tamaño(cancha.getTamaño())
-                .iluminacion(cancha.getIluminacion())
-                .cubierta(cancha.getCubierta())
-                .urlImagen(cancha.getUrlImagen())
-                .idAreadeportiva(cancha.getAreaDeportiva() != null ? cancha.getAreaDeportiva().getIdAreaDeportiva() : null)
+                .idCancha(c.getIdCancha())
+                .nombre(c.getNombre())
+                .costoHora(c.getCostoHora())
+                .capacidad(c.getCapacidad())
+                .estado(c.getEstado())
+                .estadobool(c.getEstadobool())
+                .mantenimiento(c.getMantenimiento())
+                .horaInicio(c.getHoraInicio())
+                .horaFin(c.getHoraFin())
+                .tipoSuperficie(c.getTipoSuperficie())
+                .tamano(c.getTamano())
+                .iluminacion(c.getIluminacion())
+                .cubierta(c.getCubierta())
+                .urlImagen(c.getUrlImagen())
+                .idAreadeportiva(c.getAreaDeportiva() != null ? c.getAreaDeportiva().getIdAreaDeportiva() : null)
                 .build();
     }
 
-    private Cancha convertToEntity(CanchaDTO dto) {
+    private Cancha toEntity(CanchaDTO d) {
         return Cancha.builder()
-                .idCancha(dto.getIdCancha())
-                .nombre(dto.getNombre())
-                .costoHora(dto.getCostoHora())
-                .capacidad(dto.getCapacidad())
-                .estado(dto.getEstado())
-                .mantenimiento(dto.getMantenimiento())
-                .horaInicio(dto.getHoraInicio())
-                .horaFin(dto.getHoraFin())
-                .tipoSuperficie(dto.getTipoSuperficie())
-                .tamaño(dto.getTamaño())
-                .iluminacion(dto.getIluminacion())
-                .cubierta(dto.getCubierta())
-                .urlImagen(dto.getUrlImagen())
+                .idCancha(d.getIdCancha())
+                .nombre(d.getNombre())
+                .costoHora(d.getCostoHora())
+                .capacidad(d.getCapacidad())
+                .estado(d.getEstado())
+                .estadobool(d.getEstadobool() != null ? d.getEstadobool() : Boolean.TRUE)
+                .mantenimiento(d.getMantenimiento())
+                .horaInicio(d.getHoraInicio())
+                .horaFin(d.getHoraFin())
+                .tipoSuperficie(d.getTipoSuperficie())
+                .tamano(d.getTamano())
+                .iluminacion(d.getIluminacion())
+                .cubierta(d.getCubierta())
+                .urlImagen(d.getUrlImagen())
                 .build();
     }
 }

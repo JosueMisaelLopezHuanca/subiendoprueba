@@ -46,12 +46,17 @@ public class AreaDeportiva {
     @Column(name = "longitud")
     private Double longitud;
 
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
+
     @ManyToOne
     @JoinColumn(name = "id_zona")
     private Zona zona;
 
     @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancha> cancha;
+
 
     @ManyToOne
     @JoinColumn(name = "id_administrador", referencedColumnName = "id_persona")

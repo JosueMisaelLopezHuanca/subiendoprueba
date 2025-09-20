@@ -115,8 +115,8 @@ public class ComentarioServiceImpl implements IComentarioService {
                 .contenido(comentario.getContenido())
                 .calificacion(comentario.getCalificacion())
                 .fecha(comentario.getFecha())
-                .estado(comentario.getEstado())
-                .idPersona(comentario.getPersona() != null ? comentario.getPersona().getIdPersona() : null)
+                private Long idMacrodistrito;
+
                 .idCancha(comentario.getCancha() != null ? comentario.getCancha().getIdCancha() : null)
                 .build();
     }

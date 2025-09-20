@@ -15,7 +15,7 @@ import jakarta.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InvitadoDTO {
+public class InvitadoDTO  {
     private Long idInvitado;
 
     @NotBlank(message = "El nombre es obligatorio.")

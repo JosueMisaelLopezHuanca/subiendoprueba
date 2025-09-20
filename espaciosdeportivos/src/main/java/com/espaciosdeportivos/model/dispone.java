@@ -12,6 +12,7 @@ import lombok.*;
 @Entity
 @Table(name = "dispone") 
 public class dispone {
+    
     @EmbeddedId
     private disponeId id;
 

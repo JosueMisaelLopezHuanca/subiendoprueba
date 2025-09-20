@@ -14,13 +14,14 @@ import lombok.*;
 public class Equipamiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_equipamiento;
+    @Column(name = "id_equipamiento", nullable = false)
+    private Long idequipamiento;
 
     @Column(name ="nombre_equipamiento" ,nullable = false)
-    private String nombre;
+    private String nombreequipamiento;
 
     @Column(name ="tipo_equipamiento" ,nullable = false)
-    private String tipo;
+    private String tipoequipamiento;
 
     @Column(name ="descripcion" , length = 400)
     private String descripcion;
@@ -29,7 +30,7 @@ public class Equipamiento {
     private String estado;
 
     @Column(name ="url_imagen" , length = 800)
-    private String url_imagen;
+    private String urlimagen;
 
     //@OneToMany(mappedBy = "equipamiento")
     //private List<dispone> cancha;

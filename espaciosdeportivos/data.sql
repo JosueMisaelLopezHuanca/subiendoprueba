@@ -95,6 +95,15 @@ INSERT INTO invitado (
 (25, true);
 
 
--- cancha
+-- macrodistrito
+
+INSERT INTO macrodistrito (nombre_macrodistrito, descripcion, estado) VALUES
+('Centro', 'Zona central de la ciudad', true),
+('Sur', 'Área residencial y comercial', true),
+('Norte', 'Zona industrial y de transporte', true),
+('Este', 'Área en expansión urbana', true),
+('Oeste', 'Zona con parques y áreas verdes', true);
+
+
 
 

@@ -1,7 +1,10 @@
 package com.espaciosdeportivos.repository;
 
 import com.espaciosdeportivos.model.Macrodistrito;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +16,13 @@ public interface MacrodistritoRepository extends JpaRepository<Macrodistrito, Lo
     List<Macrodistrito> findByEstadoTrue();
 
     // Activo por id
-    Optional<Macrodistrito> findByIdMacrodistritoAndEstadoTrue(Long idMacrodistrito);
+    Optional<Macrodistrito> findById(Long idMacrodistrito);
 
-    // Unicidad por nombre (opcionalmente úsalo si quieres reforzar)
-    boolean existsByNombreIgnoreCase(String nombre);
+    //Unicidad por nombre (opcionalmente úsalo si quieres reforzar) yes
+    //boolean existsByNombreIgnoreCase(String nombre);
 
-    Optional<Macrodistrito> findByNombreIgnoreCase(String nombre);
+    //Optional<Macrodistrito> findByNombreIgnoreCase(String nombre);//yes
+
+    
 }
 

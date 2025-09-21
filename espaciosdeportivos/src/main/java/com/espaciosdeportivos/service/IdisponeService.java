@@ -1,9 +1,9 @@
 package com.espaciosdeportivos.service;
 
 import java.util.List;
-import jakarta.validation.Valid;
+
 import com.espaciosdeportivos.dto.disponeDTO;
-import com.espaciosdeportivos.model.dispone;
+
 
 public interface IdisponeService {
     disponeDTO asociarCanchaAEspacio(disponeDTO iddisponeDTO);

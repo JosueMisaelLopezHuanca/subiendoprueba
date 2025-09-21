@@ -10,8 +10,8 @@ public class ZonaValidator {
         if (nombre == null || nombre.isBlank()) {
             throw new BusinessException("El nombre de la zona es obligatorio.");
         }
-        if (nombre.length() > 100) {
-            throw new BusinessException("El nombre de la zona no puede exceder 100 caracteres.");
+        if (nombre.length() > 200) {
+            throw new BusinessException("El nombre de la zona no puede exceder 200 caracteres.");
         }
     }
 

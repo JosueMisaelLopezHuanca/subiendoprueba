@@ -44,7 +44,7 @@ public class QrServiceImpl implements IQrService {
         // this.invitadoRepository = invitadoRepository;
         // this.usuarioControlRepository = usuarioControlRepository;
     }
-
+    //Pregunta si quiero obtner todos los qr por la parte administrativa
     @Override
     public List<QrDTO> obtenerTodosLosQrs() {
         return qrRepository.findByEstadoTrue()

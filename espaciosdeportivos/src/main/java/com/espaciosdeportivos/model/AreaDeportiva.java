@@ -20,7 +20,7 @@ public class AreaDeportiva {
     @Column(name = "nombre_area", nullable = false, length = 100)
     private String nombreArea;
 
-    @Column(name = "descripcion_area", length = 400)
+    @Column(name = "descripcion_area", length = 600)
     private String descripcionArea;
 
     @Column(name = "email_area", length = 100)
@@ -49,14 +49,12 @@ public class AreaDeportiva {
     @Column(name = "estado", nullable = false)
     private Boolean estado;
 
-
     @ManyToOne
     @JoinColumn(name = "id_zona")
     private Zona zona;
 
     @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancha> cancha;
-
 
     @ManyToOne
     @JoinColumn(name = "id_administrador", referencedColumnName = "id_persona")

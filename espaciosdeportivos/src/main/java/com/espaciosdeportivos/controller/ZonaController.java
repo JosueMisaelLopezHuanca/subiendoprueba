@@ -72,14 +72,14 @@ public class ZonaController {
 
     @GetMapping("/{id}/lock")
     public ResponseEntity<Zona> obtenerZonaConBloqueo(@PathVariable Long id) {
-        Zona Zona = zonaService.obtenerZonaConBloqueo(id);
-        return ResponseEntity.ok(Zona);
+        Zona zona = zonaService.obtenerZonaConBloqueo(id);
+        return ResponseEntity.ok(zona);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<String> eliminarZonaFisicamente(@PathVariable Long id) {
         zonaService.eliminarZonaFisicamente(id);
-        return ResponseEntity.ok("MZona eliminada físicamente");
+        return ResponseEntity.ok("Zona eliminada físicamente");
     }
 }

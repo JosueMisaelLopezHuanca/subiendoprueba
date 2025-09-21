@@ -16,7 +16,7 @@ public interface AreaDeportivaRepository extends JpaRepository<AreaDeportiva, Lo
 
     // Activo por id
     Optional<AreaDeportiva> findByIdAreaDeportivaAndEstadoTrue(Long idAreaDeportiva);
-
+    
     // Por zona (solo activos)
     List<AreaDeportiva> findByZona_IdZonaAndEstadoTrue(Long idZona);
 

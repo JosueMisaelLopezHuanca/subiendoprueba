@@ -1,9 +1,8 @@
 package com.espaciosdeportivos.model;
-import lombok.*;
 
+import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
-
 
 @Getter
 @Setter
@@ -24,7 +23,9 @@ public class Macrodistrito {
     @Column(name = "descripcion", length = 400)
     private String descripcion;
 
-    @OneToMany(mappedBy = "macrodistrito", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Zona> zona;  
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
 
+    @OneToMany(mappedBy = "macrodistrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Zona> zona;
 }

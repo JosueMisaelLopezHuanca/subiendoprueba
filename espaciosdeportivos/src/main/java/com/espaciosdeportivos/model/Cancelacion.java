@@ -37,7 +37,7 @@ public class Cancelacion {
     private Reserva reserva;
 
     @ManyToOne
-    @JoinColumn(name = "id_cliente", nullable = false)
+    @JoinColumn(name = "id_cliente", referencedColumnName = "id_persona" ,nullable = false)
     private Cliente cliente;
 
     //k

@@ -15,30 +15,30 @@ public class AreaDeportiva {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_areadeportiva")
-    private Long id_areadeportiva;
+    private Long idAreaDeportiva;
 
     @Column(name = "nombre_area", nullable = false, length = 100)
-    private String nombre_area;
+    private String nombreArea;
 
     @Column(name = "descripcion_area", length = 400)
-    private String descripcion_area;
+    private String descripcionArea;
 
     @Column(name = "email_area", length = 100)
-    private String email_area;
+    private String emailArea;
 
     @Column(name = "telefono_area", length = 8)
-    private String telefono_area;
+    private String telefonoArea;
 
     @Column(name = "hora_inicio_area")
-    private String hora_inicio_area;
+    private String horaInicioArea;
     @Column(name = "hora_fin_area")
-    private String hora_fin_area;
+    private String horaFinArea;
 
     @Column(name = "estado_area", nullable = false, length = 100)
-    private String estado_area;
+    private String estadoArea;
 
     @Column(name = "url_imagen", length = 800)
-    private String url_imagen;
+    private String urlImagen;
 
     @Column(name = "latitud")
     private Double latitud;
@@ -46,12 +46,17 @@ public class AreaDeportiva {
     @Column(name = "longitud")
     private Double longitud;
 
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
+
     @ManyToOne
     @JoinColumn(name = "id_zona")
     private Zona zona;
 
     @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancha> cancha;
+
 
     @ManyToOne
     @JoinColumn(name = "id_administrador", referencedColumnName = "id_persona")

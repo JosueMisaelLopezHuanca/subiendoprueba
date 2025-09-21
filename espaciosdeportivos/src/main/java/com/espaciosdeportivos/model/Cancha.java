@@ -27,7 +27,7 @@ public class Cancha {
     @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 
-    @Column(name = "estado", nullable = false, length = 100)
+    @Column(name = "estado_cancha", nullable = false, length = 100)
     private String estado;
 
     @Column(name = "mantenimiento", nullable = false, length = 100)
@@ -42,8 +42,8 @@ public class Cancha {
     @Column(name = "tipo_superficie", nullable = false, length = 100)
     private String tipoSuperficie;
 
-    @Column(name = "tamaño", nullable = false, length = 100)
-    private String tamaño;
+    @Column(name = "tamano", nullable = false, length = 100)
+    private String tamano;
 
     @Column(name = "iluminacion", nullable = false, length = 100)
     private String iluminacion;
@@ -53,6 +53,9 @@ public class Cancha {
 
     @Column(name = "url_imagen", length = 800)
     private String urlImagen;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estadobool;
 
     @ManyToOne
     @JoinColumn(name = "id_areadeportiva")

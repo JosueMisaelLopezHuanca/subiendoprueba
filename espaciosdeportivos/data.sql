@@ -98,3 +98,45 @@ INSERT INTO invitado (
 -- cancha
 
 
+------------------------SQL JOSUE ENTIDADES PRINCIPALES-------------------
+select rx.estado_reserva, rx.monto_total, px.monto, px.tipo_pago
+from reserva rx, pago px
+where px.id_reserva = rx.id_reserva
+
+
+-- INSERTS de ejemplo para disciplina
+SELECT * FROM disciplina
+-- INSERTS de ejemplo para Disciplina
+INSERT INTO disciplina (id_disciplina, nombre, descripcion)
+VALUES 
+    (1, 'Fútbol', 'Deporte de equipo, 11 jugadores por lado'),
+    (2, 'Baloncesto', 'Deporte de equipo, 5 jugadores por lado'),
+    (3, 'Natación', 'Deporte individual o por relevos en piscina');
+
+
+-- INSERTS de ejemplo para Reserva
+INSERT INTO reserva (fecha_creacion, fecha_reserva, hora_inicio, hora_fin, estado_reserva, monto_total, observaciones, id_cliente)
+VALUES ('2025-09-20', '2025-09-25', '10:00:00', '12:00:00', 'Confirmada', 150.00, 'Reserva para torneo amistoso.', 4);
+
+INSERT INTO reserva (fecha_creacion, fecha_reserva, hora_inicio, hora_fin, estado_reserva, monto_total, observaciones, id_cliente)
+VALUES ('2025-09-20', '2025-09-26', '14:00:00', '16:00:00', 'Confirmada', 180.00, 'Reserva para entrenamiento de equipo.', 5);
+
+INSERT INTO reserva (fecha_creacion, fecha_reserva, hora_inicio, hora_fin, estado_reserva, monto_total, observaciones, id_cliente)
+VALUES ('2025-09-20', '2025-09-27', '18:00:00', '20:00:00', 'Confirmada', 200.00, 'Reserva para partido amistoso.', 6);
+
+
+-- INSERTS de ejemplo para Pagos
+-- Pagos para la reserva con id 1 (cliente 5)
+INSERT INTO pago (monto, fecha, tipo_pago, metodo_pago, estado, id_reserva)
+VALUES (90.00, '2025-09-20', 'parcial', 'tarjeta', 'confirmado', 1);
+
+INSERT INTO pago (monto, fecha, tipo_pago, metodo_pago, estado, id_reserva)
+VALUES (90.00, '2025-09-21', 'parcial', 'efectivo', 'confirmado', 1);
+
+
+-----canchas inventada con valor null
+INSERT INTO cancha (nombre_cancha, costo_hora, capacidad, estado_cancha, mantenimiento, hora_inicio, hora_fin, tipo_superficie, tamano, iluminacion, cubierta, url_imagen, estado, id_areadeportiva)
+VALUES ('Cancha Sintética A', 50.00, 10, 'Disponible', 'No requiere', '08:00:00', '22:00:00', 'Sintética', '25x15', 'Sí', 'Cubierta', 'https://example.com/cancha.jpg', TRUE, NULL);
+
+INSERT INTO cancha (nombre_cancha, costo_hora, capacidad, estado_cancha, mantenimiento, hora_inicio, hora_fin, tipo_superficie, tamano, iluminacion, cubierta, url_imagen, estado, id_areadeportiva)
+VALUES ('Cancha Sintética B', 50.00, 10, 'Disponible', 'No requiere', '08:00:00', '22:00:00', 'Sintética', '25x15', 'Sí', 'Cubierta', 'https://example.com/cancha.jpg', TRUE, NULL);

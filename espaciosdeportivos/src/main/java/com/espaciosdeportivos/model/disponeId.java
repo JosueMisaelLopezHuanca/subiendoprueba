@@ -15,9 +15,10 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode 
 public class disponeId {
+    
     @Column(name = "id_cancha")
-    private Long id_cancha;
+    private Long idcancha;
 
     @Column(name = "id_equipamiento")
-    private Long id_equipamiento;
+    private Long idequipamiento;
 }

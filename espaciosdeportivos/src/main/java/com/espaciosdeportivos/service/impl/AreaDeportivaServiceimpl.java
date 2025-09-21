@@ -126,7 +126,7 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
     @Transactional
     public AreaDeportiva obtenerAreaDeportivaConBloqueo(Long id) {
         AreaDeportiva areaDeportiva = areaDeportivaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Zona no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Area deportiba  no encontrado con ID: " + id));
         try {
             Thread.sleep(15000); 
         } catch (InterruptedException e) {

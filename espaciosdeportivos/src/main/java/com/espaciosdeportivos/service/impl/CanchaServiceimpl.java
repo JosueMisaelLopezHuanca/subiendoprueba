@@ -1,36 +1,54 @@
 package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.CanchaDTO;
+
 import com.espaciosdeportivos.model.Cancha;
 import com.espaciosdeportivos.model.AreaDeportiva;
+
 import com.espaciosdeportivos.repository.CanchaRepository;
 import com.espaciosdeportivos.repository.AreaDeportivaRepository;
+
 import com.espaciosdeportivos.service.ICanchaService;
 import com.espaciosdeportivos.validation.CanchaValidator;
 
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Transactional
-public class CanchaServiceimpl implements ICanchaService {
+public class CanchaServiceImpl implements ICanchaService {
 
     private final CanchaRepository canchaRepository;
     private final AreaDeportivaRepository areaDeportivaRepository;
     private final CanchaValidator canchaValidator;
+
+    @Autowired
+    public CanchaServiceImpl(
+        CanchaRepository canchaRepository, 
+        AreaDeportivaRepository areaDeportivaRepository, 
+        CanchaValidator canchaValidator
+    ) {
+        this.canchaRepository = canchaRepository;
+        this.areaDeportivaRepository = areaDeportivaRepository;
+        this.canchaValidator = canchaValidator;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<CanchaDTO> obtenerTodasLasCanchas() {
         return canchaRepository.findByEstadoboolTrue()
                 .stream()
-                .map(this::toDto)
-                .toList();
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+                //.toList();
     }
 
     @Override
@@ -38,27 +56,30 @@ public class CanchaServiceimpl implements ICanchaService {
     public CanchaDTO obtenerCanchaPorId(Long id) {
         Cancha cancha = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
-        return toDto(cancha);
+        return convertToDTO(cancha);
     }
 
     @Override
-    public CanchaDTO crearCancha(@Valid CanchaDTO dto) {
+    public CanchaDTO crearCancha(CanchaDTO dto) {
         canchaValidator.validarCancha(dto);
 
-        AreaDeportiva area = areaDeportivaRepository.findById(dto.getIdAreadeportiva())
-                .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + dto.getIdAreadeportiva()));
+        boolean existeAreaDportiva = areaDeportivaRepository.existsById(dto.getIdAreadeportiva());
+        if (!existeAreaDportiva) {
+            throw new RuntimeException("Área deportiva no encontrada con ID: " + dto.getIdAreadeportiva());
+        }
 
-        Cancha entidad = toEntity(dto);
-        entidad.setIdCancha(null);
-        entidad.setEstadobool(Boolean.TRUE);
-        entidad.setAreaDeportiva(area);
+        Cancha cancha = convertToEntity(dto);
+        cancha.setIdCancha(null);
+        cancha.setEstadobool(Boolean.TRUE);
+        
+        Cancha guardada = canchaRepository.save(cancha);
 
-        return toDto(canchaRepository.save(entidad));
+        return convertToDTO(guardada);
     }
 
     @Override
     public CanchaDTO actualizarCancha(Long id, @Valid CanchaDTO dto) {
-        Cancha existente = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
+        Cancha existente = canchaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
 
         canchaValidator.validarCancha(dto);
@@ -81,7 +102,8 @@ public class CanchaServiceimpl implements ICanchaService {
         existente.setUrlImagen(dto.getUrlImagen());
         existente.setAreaDeportiva(area);
 
-        return toDto(canchaRepository.save(existente));
+        Cancha actualizada = canchaRepository.save(existente);
+        return convertToDTO(actualizada);
     }
 
     @Override
@@ -89,11 +111,33 @@ public class CanchaServiceimpl implements ICanchaService {
         Cancha existente = canchaRepository.findByIdCanchaAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
         existente.setEstadobool(Boolean.FALSE); // baja lógica
-        return toDto(canchaRepository.save(existente));
+        return convertToDTO(canchaRepository.save(existente));
+    }
+
+    @Override
+    @Transactional
+    public Cancha obtenerCanchaConBloqueo(Long id) {
+        Cancha cancha = canchaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrado con ID: " + id));
+        try {
+            Thread.sleep(15000); 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return cancha;
+    }
+
+    @Override
+    @Transactional
+    public void eliminarCanchaFisicamente(Long id) {
+        Cancha existente = canchaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + id));
+
+        canchaRepository.delete(existente);
     }
 
     // --------- mapping ----------
-    private CanchaDTO toDto(Cancha c) {
+    private CanchaDTO convertToDTO(Cancha c) {
         return CanchaDTO.builder()
                 .idCancha(c.getIdCancha())
                 .nombre(c.getNombre())
@@ -113,7 +157,9 @@ public class CanchaServiceimpl implements ICanchaService {
                 .build();
     }
 
-    private Cancha toEntity(CanchaDTO d) {
+    private Cancha convertToEntity(CanchaDTO d) {
+        AreaDeportiva area = areaDeportivaRepository.findById(d.getIdAreadeportiva())
+                .orElseThrow(() -> new RuntimeException("Área deportiva no encontrada con ID: " + d.getIdAreadeportiva()));
         return Cancha.builder()
                 .idCancha(d.getIdCancha())
                 .nombre(d.getNombre())
@@ -129,6 +175,7 @@ public class CanchaServiceimpl implements ICanchaService {
                 .iluminacion(d.getIluminacion())
                 .cubierta(d.getCubierta())
                 .urlImagen(d.getUrlImagen())
+                .areaDeportiva(area)
                 .build();
     }
 }

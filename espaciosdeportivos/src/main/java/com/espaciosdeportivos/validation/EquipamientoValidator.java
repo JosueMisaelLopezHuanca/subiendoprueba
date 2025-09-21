@@ -47,8 +47,8 @@ public class EquipamientoValidator {
     }
 
     public void validarEquipamiento(EquipamientoDTO dto) {
-        validarNombre(dto.getNombre());
-        validarTipo(dto.getTipo());
+        validarNombre(dto.getNombreEquipamiento());
+        validarTipo(dto.getTipoEquipamiento());
         validarDescripcion(dto.getDescripcion());
         validarEstadoTexto(dto.getEstado());
         validarEstadoBool(dto.getEstadobool());

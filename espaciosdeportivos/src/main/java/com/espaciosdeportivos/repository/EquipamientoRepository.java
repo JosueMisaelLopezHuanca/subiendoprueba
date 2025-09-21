@@ -14,10 +14,10 @@ public interface EquipamientoRepository extends JpaRepository<Equipamiento, Long
     List<Equipamiento> findByEstadoboolTrue();
 
     // Activo por id
-    Optional<Equipamiento> findByIdequipamientoAndEstadoboolTrue(Long idequipamiento);
+    Optional<Equipamiento> findByIdEquipamientoAndEstadoboolTrue(Long idEquipamiento);
 
     // Unicidad por nombre
-    boolean existsByNombreequipamientoIgnoreCase(String nombre);
+    boolean existsByNombreEquipamientoIgnoreCase(String nombre);
 
     // (Opcional) por estado textual
     List<Equipamiento> findByEstadoAndEstadoboolTrue(String estado);

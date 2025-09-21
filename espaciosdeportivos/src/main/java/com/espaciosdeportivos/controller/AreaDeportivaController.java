@@ -77,7 +77,7 @@ public class AreaDeportivaController {
  
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<String> eliminarZonaFisicamente(@PathVariable Long id) {
+    public ResponseEntity<String> eliminarAreaDeportivaFisicamente(@PathVariable Long id) {
         areaDeportivaservice.eliminarAreaDeportivaFisicamente(id);
         return ResponseEntity.ok("AreaDepotiva eliminada físicamente");
     }

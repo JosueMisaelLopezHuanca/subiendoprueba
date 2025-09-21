@@ -1,6 +1,7 @@
 package com.espaciosdeportivos.controller;
 
 import com.espaciosdeportivos.dto.CanchaDTO;
+import com.espaciosdeportivos.model.Cancha;
 import com.espaciosdeportivos.service.ICanchaService;
 
 import jakarta.transaction.Transactional;
@@ -75,6 +76,19 @@ public class CanchaController {
         CanchaDTO eliminado = canchaService.eliminarCancha(id);
         logger.info("[CANCHA] Fin eliminarCancha (baja lógica): {}", id);
         return ResponseEntity.ok(eliminado);
+    }
+
+    @GetMapping("/{id}/lock")
+    public ResponseEntity<Cancha> obtenerCanchaConBloqueo(@PathVariable Long id) {
+       Cancha cancha =canchaService.obtenerCanchaConBloqueo(id);
+        return ResponseEntity.ok(cancha);
+    }
+ 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<String> eliminarZonaFisicamente(@PathVariable Long id) {
+        canchaService.eliminarCanchaFisicamente(id);
+        return ResponseEntity.ok("AreaDepotiva eliminada físicamente");
     }
 
 }

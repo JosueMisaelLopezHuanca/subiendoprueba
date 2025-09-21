@@ -23,6 +23,6 @@ public interface MacrodistritoRepository extends JpaRepository<Macrodistrito, Lo
 
     //Optional<Macrodistrito> findByNombreIgnoreCase(String nombre);//yes
 
-    
+    boolean existsById(Long id);
 }
 

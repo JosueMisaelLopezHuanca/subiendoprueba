@@ -2,6 +2,7 @@ package com.espaciosdeportivos.controller;
 
 
 import com.espaciosdeportivos.dto.ZonaDTO;
+import com.espaciosdeportivos.model.Zona;
 import com.espaciosdeportivos.service.IZonaService;
 
 import jakarta.transaction.Transactional;
@@ -67,5 +68,18 @@ public class ZonaController {
     public ResponseEntity<ZonaDTO> eliminarZona(@PathVariable Long id) {
         ZonaDTO eliminada = zonaService.eliminarZona(id);
         return ResponseEntity.ok(eliminada);
+    }
+
+    @GetMapping("/{id}/lock")
+    public ResponseEntity<Zona> obtenerZonaConBloqueo(@PathVariable Long id) {
+        Zona Zona = zonaService.obtenerZonaConBloqueo(id);
+        return ResponseEntity.ok(Zona);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<String> eliminarZonaFisicamente(@PathVariable Long id) {
+        zonaService.eliminarZonaFisicamente(id);
+        return ResponseEntity.ok("MZona eliminada físicamente");
     }
 }

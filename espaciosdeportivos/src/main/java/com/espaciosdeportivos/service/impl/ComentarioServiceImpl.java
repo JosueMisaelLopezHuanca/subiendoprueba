@@ -1,43 +1,35 @@
 package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.ComentarioDTO;
+import com.espaciosdeportivos.model.Persona;
 import com.espaciosdeportivos.model.Comentario;
+import com.espaciosdeportivos.repository.PersonaRepository;
 import com.espaciosdeportivos.repository.ComentarioRepository;
 import com.espaciosdeportivos.service.IComentarioService;
 import com.espaciosdeportivos.validation.ComentarioValidator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class ComentarioServiceImpl implements IComentarioService {
 
     private final ComentarioRepository comentarioRepository;
+    private final PersonaRepository personaRepository;
     private final ComentarioValidator comentarioValidator;
 
-    // Repositorios comentados temporalmente
-    // @Autowired
-    // private PersonaRepository personaRepository;
-
-    // @Autowired
-    // private CanchaRepository canchaRepository;
-
-    @Autowired
-    public ComentarioServiceImpl(ComentarioRepository comentarioRepository, ComentarioValidator comentarioValidator) {
-        this.comentarioRepository = comentarioRepository;
-        this.comentarioValidator = comentarioValidator;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public List<ComentarioDTO> obtenerTodosLosComentarios() {
-        return comentarioRepository.findAll()
-                .stream()
+        return comentarioRepository.findAll().stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -49,91 +41,87 @@ public class ComentarioServiceImpl implements IComentarioService {
     }
 
     @Override
-    @Transactional
-    public ComentarioDTO crearComentario(ComentarioDTO comentarioDTO) {
-        comentarioValidator.validarComentario(comentarioDTO);
+    public ComentarioDTO crearComentario(@Valid ComentarioDTO dto) {
+        comentarioValidator.validarComentario(dto);
 
-        Comentario comentario = convertToEntity(comentarioDTO);
-        Comentario comentarioGuardado = comentarioRepository.save(comentario);
+        Persona persona = personaRepository.findById(dto.getIdPersona())
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada con ID: " + dto.getIdPersona()));
 
-        return convertToDTO(comentarioGuardado);
+        Comentario entidad = toEntity(dto, persona);
+        entidad.setIdComentario(null);
+        entidad.setEstado(Boolean.TRUE);
+
+        return convertToDTO(comentarioRepository.save(entidad));
     }
 
     @Override
-    @Transactional
-    public ComentarioDTO actualizarComentario(Long id, ComentarioDTO comentarioDTO) {
-        Comentario comentarioExistente = comentarioRepository.findById(id)
+    public ComentarioDTO actualizarComentario(Long id, @Valid ComentarioDTO dto) {
+        Comentario existente = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comentario no encontrado con ID: " + id));
 
-        comentarioValidator.validarComentario(comentarioDTO);
+        comentarioValidator.validarComentario(dto);
 
-        comentarioExistente.setContenido(comentarioDTO.getContenido());
-        comentarioExistente.setCalificacion(comentarioDTO.getCalificacion());
-        comentarioExistente.setFecha(comentarioDTO.getFecha());
-        comentarioExistente.setEstado(comentarioDTO.getEstado());
+        Persona persona = personaRepository.findById(dto.getIdPersona())
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada con ID: " + dto.getIdPersona()));
 
-        Comentario comentarioActualizado = comentarioRepository.save(comentarioExistente);
-        return convertToDTO(comentarioActualizado);
+        existente.setContenido(dto.getContenido());
+        existente.setCalificacion(dto.getCalificacion());
+        existente.setFecha(dto.getFecha());
+        existente.setEstado(dto.getEstado());
+        existente.setPersona(persona);
+
+        return convertToDTO(comentarioRepository.save(existente));
     }
 
     @Override
-    @Transactional
     public ComentarioDTO eliminarComentario(Long id) {
-        Comentario comentarioExistente = comentarioRepository.findById(id)
+        Comentario existente = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comentario no encontrado con ID: " + id));
-
-        comentarioExistente.setEstado(false); // baja lógica
-        Comentario comentarioEliminado = comentarioRepository.save(comentarioExistente);
-
-        return convertToDTO(comentarioEliminado);
+        existente.setEstado(Boolean.FALSE);
+        return convertToDTO(comentarioRepository.save(existente));
     }
 
     @Override
-    @Transactional
+    public void eliminarComentarioFisicamente(Long id) {
+        Comentario existente = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comentario no encontrado con ID: " + id));
+        comentarioRepository.delete(existente);
+    }
+
+    @Override
     public Comentario obtenerComentarioConBloqueo(Long id) {
         Comentario comentario = comentarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comentario no encontrado con ID: " + id));
         try {
-            Thread.sleep(15000); // simula espera
+            Thread.sleep(15000); // Simula espera
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         return comentario;
     }
 
-    @Override
-    @Transactional
-    public void eliminarComentarioFisicamente(Long id) {
-        Comentario comentarioExistente = comentarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comentario no encontrado con ID: " + id));
-        comentarioRepository.delete(comentarioExistente);
-    }
-
-    private ComentarioDTO convertToDTO(Comentario comentario) {
+    // ---------- mapping ----------
+    private ComentarioDTO convertToDTO(Comentario c) {
         return ComentarioDTO.builder()
-                .idComentario(comentario.getIdComentario())
-                .contenido(comentario.getContenido())
-                .calificacion(comentario.getCalificacion())
-                .fecha(comentario.getFecha())
-                .idCancha(comentario.getCancha() != null ? comentario.getCancha().getIdCancha() : null)
+                .idComentario(c.getIdComentario())
+                .contenido(c.getContenido())
+                .calificacion(c.getCalificacion())
+                .fecha(c.getFecha())
+                .estado(c.getEstado())
+                .idPersona(c.getPersona() != null ? c.getPersona().getIdPersona() : null)
+                .idCancha(c.getCancha() != null ? c.getCancha().getIdCancha() : null)
                 .build();
     }
 
-    private Comentario convertToEntity(ComentarioDTO dto) {
-        // Persona persona = personaRepository.findById(dto.getIdPersona())
-        //     .orElseThrow(() -> new RuntimeException("Persona no encontrada con ID: " + dto.getIdPersona()));
-
-        // Cancha cancha = canchaRepository.findById(dto.getIdCancha())
-        //     .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + dto.getIdCancha()));
-
+    private Comentario toEntity(ComentarioDTO d, Persona persona) {
         return Comentario.builder()
-                .idComentario(dto.getIdComentario())
-                .contenido(dto.getContenido())
-                .calificacion(dto.getCalificacion())
-                .fecha(dto.getFecha())
-                .estado(dto.getEstado())
-                // .persona(persona)
-                // .cancha(cancha)
+                .idComentario(d.getIdComentario())
+                .contenido(d.getContenido())
+                .calificacion(d.getCalificacion())
+                .fecha(d.getFecha())
+                .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
+                .persona(persona)
+                // .cancha(...) ← si quieres incluir la cancha, agrégala aquí
                 .build();
     }
 }

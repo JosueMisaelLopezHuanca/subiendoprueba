@@ -35,6 +35,6 @@ public class Pago {
 
     // Relación con Reserva (muchos pagos pueden pertenecer a una reserva)
     @ManyToOne
-    @JoinColumn(name = "id_reserva", nullable = false)
+    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva",nullable = false)
     private Reserva reserva;
 }

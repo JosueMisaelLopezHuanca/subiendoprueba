@@ -1,5 +1,6 @@
 package com.espaciosdeportivos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,18 +12,19 @@ import lombok.*;
 @ToString
 @Entity
 @Table(name = "participa")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // para seguridad extra
 public class participa {
-
+//J
     @EmbeddedId
     private participaId id;
-    //J
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idInvitado") // se enlaza con la PK compuesta
+    @MapsId("idInvitado")
     @JoinColumn(name = "id_invitado", referencedColumnName = "id_invitado")
     private Invitado invitado;
-    //J
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idReserva") // se enlaza con la PK compuesta
+    @MapsId("idReserva")
     @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
     private Reserva reserva;
 }

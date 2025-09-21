@@ -2,8 +2,10 @@ package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.ComentarioDTO;
 import com.espaciosdeportivos.model.Persona;
+import com.espaciosdeportivos.model.Cancha;
 import com.espaciosdeportivos.model.Comentario;
 import com.espaciosdeportivos.repository.PersonaRepository;
+import com.espaciosdeportivos.repository.CanchaRepository;
 import com.espaciosdeportivos.repository.ComentarioRepository;
 import com.espaciosdeportivos.service.IComentarioService;
 import com.espaciosdeportivos.validation.ComentarioValidator;
@@ -22,6 +24,7 @@ public class ComentarioServiceImpl implements IComentarioService {
 
     private final ComentarioRepository comentarioRepository;
     private final PersonaRepository personaRepository;
+    private final CanchaRepository canchaRepository;
     private final ComentarioValidator comentarioValidator;
 
     @Override
@@ -47,7 +50,10 @@ public class ComentarioServiceImpl implements IComentarioService {
         Persona persona = personaRepository.findById(dto.getIdPersona())
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada con ID: " + dto.getIdPersona()));
 
-        Comentario entidad = toEntity(dto, persona);
+        Cancha cancha = canchaRepository.findById(dto.getIdCancha())
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + dto.getIdCancha()));
+
+        Comentario entidad = toEntity(dto, persona, cancha);
         entidad.setIdComentario(null);
         entidad.setEstado(Boolean.TRUE);
 
@@ -64,11 +70,15 @@ public class ComentarioServiceImpl implements IComentarioService {
         Persona persona = personaRepository.findById(dto.getIdPersona())
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada con ID: " + dto.getIdPersona()));
 
+        Cancha cancha = canchaRepository.findById(dto.getIdCancha())
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrada con ID: " + dto.getIdCancha()));
+
         existente.setContenido(dto.getContenido());
         existente.setCalificacion(dto.getCalificacion());
         existente.setFecha(dto.getFecha());
         existente.setEstado(dto.getEstado());
         existente.setPersona(persona);
+        existente.setCancha(cancha);
 
         return convertToDTO(comentarioRepository.save(existente));
     }
@@ -113,7 +123,7 @@ public class ComentarioServiceImpl implements IComentarioService {
                 .build();
     }
 
-    private Comentario toEntity(ComentarioDTO d, Persona persona) {
+    private Comentario toEntity(ComentarioDTO d, Persona persona, Cancha cancha) {
         return Comentario.builder()
                 .idComentario(d.getIdComentario())
                 .contenido(d.getContenido())
@@ -121,7 +131,7 @@ public class ComentarioServiceImpl implements IComentarioService {
                 .fecha(d.getFecha())
                 .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
                 .persona(persona)
-                // .cancha(...) ← si quieres incluir la cancha, agrégala aquí
+                .cancha(cancha)
                 .build();
     }
 }

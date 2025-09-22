@@ -189,3 +189,145 @@ VALUES ('Cancha Sintética A', 50.00, 10, 'Disponible', 'No requiere', '08:00:00
 
 INSERT INTO cancha (nombre_cancha, costo_hora, capacidad, estado_cancha, mantenimiento, hora_inicio, hora_fin, tipo_superficie, tamano, iluminacion, cubierta, url_imagen, estado, id_areadeportiva)
 VALUES ('Cancha Sintética B', 50.00, 10, 'Disponible', 'No requiere', '08:00:00', '22:00:00', 'Sintética', '25x15', 'Sí', 'Cubierta', 'https://example.com/cancha.jpg', TRUE, NULL);
+
+
+
+--- QR KAREN------------------------------------------------ ---
+-- QR 1 para reserva 1
+INSERT INTO qr (
+    codigo_qr,
+    fecha_generacion,
+    fecha_expiracion,
+    estado,
+    descripcion,
+    id_reserva,
+    id_invitado,
+    id_us_control
+) VALUES (
+    'QR-R1-001',
+    '2025-09-21 08:00:00',
+    '2025-09-22 08:00:00',
+    TRUE,
+    'Acceso cancha norte',
+    1,
+    2,
+    3
+);
+
+-- QR 2 para reserva 1
+INSERT INTO qr (
+    codigo_qr,
+    fecha_generacion,
+    fecha_expiracion,
+    estado,
+    descripcion,
+    id_reserva,
+    id_invitado,
+    id_us_control
+) VALUES (
+    'QR-R1-002B',
+    '2025-09-21 08:15:00',
+    '2025-09-22 08:15:00',
+    TRUE,
+    'Acceso cancha norte - segundo invitado',
+    1,
+    3,
+    4
+);
+
+-- QR 3 para reserva 1
+INSERT INTO qr (
+    codigo_qr,
+    fecha_generacion,
+    fecha_expiracion,
+    estado,
+    descripcion,
+    id_reserva,
+    id_invitado,
+    id_us_control
+) VALUES (
+    'QR-R1-003',
+    '2025-09-21 08:30:00',
+    '2025-09-22 08:30:00',
+    TRUE,
+    'Acceso cancha norte - tercer invitado',
+    1,
+    4,
+    5
+);
+
+-- QR 1 para reserva 2
+INSERT INTO qr (
+    codigo_qr,
+    fecha_generacion,
+    fecha_expiracion,
+    estado,
+    descripcion,
+    id_reserva,
+    id_invitado,
+    id_us_control
+) VALUES (
+    'QR-R2-001',
+    '2025-09-21 09:00:00',
+    '2025-09-22 09:00:00',
+    TRUE,
+    'Acceso cancha sur',
+    2,
+    5,
+    6
+);
+
+-- CANCELACION ----
+INSERT INTO cancelacion (
+    fecha_cancelacion,
+    hora_cancelacion,
+    motivo,
+    estado,
+    id_reserva,
+    id_cliente
+) VALUES (
+    '2025-09-21',
+    '09:45:00',
+    'Cancelación por reprogramación de evento deportivo',
+    TRUE,
+    3,  -- ID de reserva existente
+    6   -- ID de cliente existente, esto validar...... solo el cliente q
+    -- la resreva debria poder cancelar
+);
+
+-- COMENTARIO --
+
+-- Comentario 1
+INSERT INTO comentario (
+    contenido,
+    calificacion,
+    fecha,
+    estado,
+    id_persona,
+    id_cancha
+) VALUES (
+    'Muy buena experiencia. El césped estaba en excelentes condiciones.',
+    5,
+    '2025-09-20',
+    TRUE,
+    2,  -- ID de persona existente
+    1   -- ID de cancha existente
+);
+
+-- Comentario 2
+INSERT INTO comentario (
+    contenido,
+    calificacion,
+    fecha,
+    estado,
+    id_persona,
+    id_cancha
+) VALUES (
+    'La cancha estaba mojada y resbalosa. Deberían mejorar el drenaje.',
+    3,
+    '2025-09-21',
+    TRUE,
+    3,  -- otra persona
+    2   -- otra cancha
+);
+

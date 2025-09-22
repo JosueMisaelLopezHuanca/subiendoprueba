@@ -2,149 +2,140 @@ package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.CancelacionDTO;
 import com.espaciosdeportivos.model.Cancelacion;
-// import com.espaciosdeportivos.model.Cliente;
-// import com.espaciosdeportivos.model.Reserva;
+import com.espaciosdeportivos.model.Reserva;
+import com.espaciosdeportivos.model.Cliente;
 import com.espaciosdeportivos.repository.CancelacionRepository;
-// import com.espaciosdeportivos.repository.ClienteRepository;
-// import com.espaciosdeportivos.repository.ReservaRepository;
+import com.espaciosdeportivos.repository.ReservaRepository;
+import com.espaciosdeportivos.repository.ClienteRepository;
 import com.espaciosdeportivos.service.ICancelacionService;
 import com.espaciosdeportivos.validation.CancelacionValidator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CancelacionServiceImpl implements ICancelacionService {
 
     private final CancelacionRepository cancelacionRepository;
+    private final ReservaRepository reservaRepository;
+    private final ClienteRepository clienteRepository;
     private final CancelacionValidator cancelacionValidator;
 
-    // Repositorios comentados temporalmente
-    // private final ClienteRepository clienteRepository;
-    // private final ReservaRepository reservaRepository;
-
-    @Autowired
-    public CancelacionServiceImpl(
-            CancelacionRepository cancelacionRepository,
-            CancelacionValidator cancelacionValidator
-            // ,ClienteRepository clienteRepository,
-            // ReservaRepository reservaRepository
-    ) {
-        this.cancelacionRepository = cancelacionRepository;
-        this.cancelacionValidator = cancelacionValidator;
-        // this.clienteRepository = clienteRepository;
-        // this.reservaRepository = reservaRepository;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public List<CancelacionDTO> obtenerTodasLasCancelaciones() {
-        return cancelacionRepository.findAll()
-                .stream()
+        return cancelacionRepository.findAll().stream()
+                .filter(Cancelacion::getEstado)
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public CancelacionDTO obtenerCancelacionPorId(Long id) {
         Cancelacion cancelacion = cancelacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
+                .filter(Cancelacion::getEstado)
+                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada o inactiva con ID: " + id));
         return convertToDTO(cancelacion);
     }
 
     @Override
-    @Transactional
-    public CancelacionDTO crearCancelacion(CancelacionDTO cancelacionDTO) {
-        cancelacionValidator.validarCancelacion(cancelacionDTO);
+    public CancelacionDTO crearCancelacion(@Valid CancelacionDTO dto) {
+        cancelacionValidator.validarCancelacion(dto);
 
-        Cancelacion cancelacion = convertToEntity(cancelacionDTO);
-        cancelacion.setEstado(true); // por defecto activa
+        Reserva reserva = reservaRepository.findById(dto.getIdReserva())
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + dto.getIdReserva()));
 
-        Cancelacion guardada = cancelacionRepository.save(cancelacion);
-        return convertToDTO(guardada);
+        Cliente cliente = clienteRepository.findById(dto.getIdCliente())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + dto.getIdCliente()));
+
+        Cancelacion entidad = toEntity(dto, reserva, cliente);
+        entidad.setIdCancelacion(null);
+        entidad.setEstado(Boolean.TRUE);
+
+        return convertToDTO(cancelacionRepository.save(entidad));
     }
 
     @Override
-    @Transactional
-    public CancelacionDTO actualizarCancelacion(Long id, CancelacionDTO cancelacionDTO) {
+    public CancelacionDTO actualizarCancelacion(Long id, @Valid CancelacionDTO dto) {
         Cancelacion existente = cancelacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
+                .filter(Cancelacion::getEstado)
+                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada o inactiva con ID: " + id));
 
-        cancelacionValidator.validarCancelacion(cancelacionDTO);
+        cancelacionValidator.validarCancelacion(dto);
 
-        existente.setMotivo(cancelacionDTO.getMotivo());
-        existente.setFechaCancelacion(cancelacionDTO.getFechaCancelacion());
-        existente.setHoraCancelacion(cancelacionDTO.getHoraCancelacion());
-        existente.setEstado(cancelacionDTO.getEstado());
+        Reserva reserva = reservaRepository.findById(dto.getIdReserva())
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + dto.getIdReserva()));
 
-        Cancelacion actualizada = cancelacionRepository.save(existente);
-        return convertToDTO(actualizada);
+        Cliente cliente = clienteRepository.findById(dto.getIdCliente())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + dto.getIdCliente()));
+
+        existente.setMotivo(dto.getMotivo());
+        existente.setFechaCancelacion(dto.getFechaCancelacion());
+        existente.setHoraCancelacion(dto.getHoraCancelacion());
+        existente.setEstado(dto.getEstado());
+        existente.setReserva(reserva);
+        existente.setCliente(cliente);
+
+        return convertToDTO(cancelacionRepository.save(existente));
     }
 
     @Override
-    @Transactional
     public CancelacionDTO eliminarCancelacion(Long id) {
         Cancelacion existente = cancelacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
-
-        existente.setEstado(false); // baja lógica
-        Cancelacion eliminada = cancelacionRepository.save(existente);
-
-        return convertToDTO(eliminada);
+                .filter(Cancelacion::getEstado)
+                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada o inactiva con ID: " + id));
+        existente.setEstado(Boolean.FALSE);
+        return convertToDTO(cancelacionRepository.save(existente));
     }
 
     @Override
-    @Transactional
-    public Cancelacion obtenerCancelacionConBloqueo(Long id) {
-        Cancelacion cancelacion = cancelacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
-        try {
-            Thread.sleep(15000); // simula espera
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        return cancelacion;
-    }
-
-    @Override
-    @Transactional
     public void eliminarCancelacionFisicamente(Long id) {
         Cancelacion existente = cancelacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
         cancelacionRepository.delete(existente);
     }
 
-    private CancelacionDTO convertToDTO(Cancelacion cancelacion) {
+    @Override
+    public Cancelacion obtenerCancelacionConBloqueo(Long id) {
+        Cancelacion cancelacion = cancelacionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cancelación no encontrada con ID: " + id));
+        try {
+            Thread.sleep(15000); // Simula espera
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return cancelacion;
+    }
+
+    // ---------- mapping ----------
+    private CancelacionDTO convertToDTO(Cancelacion c) {
         return CancelacionDTO.builder()
-                .idCancelacion(cancelacion.getIdCancelacion())
-                .motivo(cancelacion.getMotivo())
-                .fechaCancelacion(cancelacion.getFechaCancelacion())
-                .horaCancelacion(cancelacion.getHoraCancelacion())
-                .estado(cancelacion.getEstado())
-                // .idCliente(cancelacion.getCliente() != null ? cancelacion.getCliente().getIdPersona() : null)
-                // .idReserva(cancelacion.getReserva() != null ? cancelacion.getReserva().getIdReserva() : null)
+                .idCancelacion(c.getIdCancelacion())
+                .motivo(c.getMotivo())
+                .fechaCancelacion(c.getFechaCancelacion())
+                .horaCancelacion(c.getHoraCancelacion())
+                .estado(c.getEstado())
+                .idReserva(c.getReserva() != null ? c.getReserva().getIdReserva() : null)
+                .idCliente(c.getCliente() != null ? c.getCliente().getIdPersona() : null)
                 .build();
     }
 
-    private Cancelacion convertToEntity(CancelacionDTO dto) {
-        // Cliente cliente = clienteRepository.findById(dto.getIdCliente())
-        //         .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + dto.getIdCliente()));
-
-        // Reserva reserva = reservaRepository.findById(dto.getIdReserva())
-        //         .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + dto.getIdReserva()));
-
+    private Cancelacion toEntity(CancelacionDTO d, Reserva reserva, Cliente cliente) {
         return Cancelacion.builder()
-                .idCancelacion(dto.getIdCancelacion())
-                .motivo(dto.getMotivo())
-                .fechaCancelacion(dto.getFechaCancelacion())
-                .horaCancelacion(dto.getHoraCancelacion())
-                .estado(dto.getEstado())
-                // .cliente(cliente)
-                // .reserva(reserva)
+                .idCancelacion(d.getIdCancelacion())
+                .motivo(d.getMotivo())
+                .fechaCancelacion(d.getFechaCancelacion())
+                .horaCancelacion(d.getHoraCancelacion())
+                .estado(d.getEstado() != null ? d.getEstado() : Boolean.TRUE)
+                .reserva(reserva)
+                .cliente(cliente)
                 .build();
     }
 }

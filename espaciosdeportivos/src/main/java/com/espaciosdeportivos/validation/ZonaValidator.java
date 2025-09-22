@@ -6,17 +6,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class ZonaValidator {
 
+    private static final int NOMBRE_MAX_LENGTH = 200;
+    private static final int DESCRIPCION_MAX_LENGTH = 600;
+
     public void validarNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             throw new BusinessException("El nombre de la zona es obligatorio.");
         }
-        if (nombre.length() > 100) {
-            throw new BusinessException("El nombre de la zona no puede exceder 100 caracteres.");
+        if (nombre.length() > NOMBRE_MAX_LENGTH) {
+            throw new BusinessException("El nombre de la zona no puede exceder 200 caracteres.");
         }
     }
 
     public void validarDescripcion(String descripcion) {
-        if (descripcion != null && descripcion.length() > 400) {
+        if (descripcion != null && descripcion.length() > DESCRIPCION_MAX_LENGTH) {
             throw new BusinessException("La descripción de la zona no puede exceder 400 caracteres.");
         }
     }

@@ -1,6 +1,7 @@
 package com.espaciosdeportivos.controller;
 
 import com.espaciosdeportivos.dto.EquipamientoDTO;
+import com.espaciosdeportivos.model.Equipamiento;
 import com.espaciosdeportivos.service.IEquipamientoService;
 
 import jakarta.transaction.Transactional;
@@ -75,5 +76,18 @@ public class EquipamientoController {
         EquipamientoDTO eliminado = equipamientoService.eliminarEquipamiento(id);
         logger.info("[EQUIP] Fin eliminar (baja lógica): {}", id);
         return ResponseEntity.ok(eliminado);
+    }
+
+    @GetMapping("/{id}/lock")
+    public ResponseEntity<Equipamiento> obtenerEquipamientoConBloqueo(@PathVariable Long id) {
+        Equipamiento equipamiento = equipamientoService.obtenerEquipamientoConBloqueo(id);
+        return ResponseEntity.ok(equipamiento);
+    }
+ 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<String> eliminarEquipamientoFisicamente(@PathVariable Long id) {
+        equipamientoService.eliminarEquipamientoFisicamente(id);
+        return ResponseEntity.ok("Equipamiento eliminada físicamente");
     }
 }

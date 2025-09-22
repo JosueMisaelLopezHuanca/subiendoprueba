@@ -13,10 +13,10 @@ public class EquipamientoDTO implements Serializable {
      private Long idEquipamiento;
 
     @NotBlank(message = "El nombre del equipamiento es obligatorio")
-    private String nombre;
+    private String nombreEquipamiento;
 
     @NotBlank(message = "El tipo de equipamiento es obligatorio")
-    private String tipo;
+    private String tipoEquipamiento;
 
     @Size(max = 400, message = "La descripción no puede tener más de 400 caracteres")
     private String descripcion;

@@ -15,13 +15,13 @@ public class Equipamiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_equipamiento", nullable = false)
-    private Long idequipamiento;
+    private Long idEquipamiento;
 
     @Column(name ="nombre_equipamiento" ,nullable = false)
-    private String nombreequipamiento;
+    private String nombreEquipamiento;
 
     @Column(name ="tipo_equipamiento" ,nullable = false)
-    private String tipoequipamiento;
+    private String tipoEquipamiento;
 
     @Column(name ="descripcion" , length = 400)
     private String descripcion;
@@ -33,7 +33,7 @@ public class Equipamiento {
     private Boolean estadobool;
 
     @Column(name ="url_imagen" , length = 800)
-    private String urlimagen;
+    private String urlImagen;
 
     //@OneToMany(mappedBy = "equipamiento")
     //private List<dispone> cancha;

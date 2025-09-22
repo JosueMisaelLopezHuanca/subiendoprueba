@@ -20,7 +20,7 @@ public class Macrodistrito {
     @Column(name = "nombre_macrodistrito", nullable = false, length = 200)
     private String nombre;
 
-    @Column(name = "descripcion", length = 400)
+    @Column(name = "descripcion", length = 600)
     private String descripcion;
 
     @Column(name = "estado", nullable = false)
@@ -28,4 +28,5 @@ public class Macrodistrito {
 
     @OneToMany(mappedBy = "macrodistrito", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Zona> zona;
+    
 }

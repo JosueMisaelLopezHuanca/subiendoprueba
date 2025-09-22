@@ -18,18 +18,18 @@ public class Zona {
     @Column(name = "id_zona")
     private Long idZona;
 
-    @Column(name = "nombre_zona", nullable = false, length = 100)
+    @Column(name = "nombre_zona", nullable = false, length = 200)
     private String nombre;
     
-    @Column(name = "descripcion", length = 400)
+    @Column(name = "descripcion", length = 600)
     private String descripcion;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
 
     @ManyToOne
     @JoinColumn(name = "id_macrodistrito")
     private Macrodistrito macrodistrito;
-
-    @Column(name = "estado", nullable = false)
-    private Boolean estado;
 
 
     @OneToMany(mappedBy = "zona", cascade = CascadeType.ALL, orphanRemoval = true)

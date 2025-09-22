@@ -1,45 +1,57 @@
 package com.espaciosdeportivos.service.impl;
 
 import com.espaciosdeportivos.dto.EquipamientoDTO;
+
 import com.espaciosdeportivos.model.Equipamiento;
+
 import com.espaciosdeportivos.repository.EquipamientoRepository;
+
 import com.espaciosdeportivos.service.IEquipamientoService;
 import com.espaciosdeportivos.validation.EquipamientoValidator;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import jakarta.validation.Valid;
+
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Transactional
-public class EquipamientoServiceimpl implements IEquipamientoService {
+public class EquipamientoServiceImpl implements IEquipamientoService {
 
     private final EquipamientoRepository equipamientoRepository;
     private final EquipamientoValidator equipamientoValidator;
+
+    @Autowired
+    public EquipamientoServiceImpl(EquipamientoRepository equipamientoRepository, EquipamientoValidator equipamientoValidator) {
+        this.equipamientoRepository = equipamientoRepository;
+        this.equipamientoValidator = equipamientoValidator;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<EquipamientoDTO> obtenerTodosLosEquipamientos() {
         return equipamientoRepository.findByEstadoboolTrue()
                 .stream()
-                .map(this::toDto)
-                .toList();
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+                //.toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public EquipamientoDTO obtenerEquipamientoPorId(Long id) {
-        Equipamiento eq = equipamientoRepository.findByIdequipamientoAndEstadoboolTrue(id)
+        Equipamiento eq = equipamientoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado con ID: " + id));
-        return toDto(eq);
+        return convertToDTO(eq);
     }
 
     @Override
-    public EquipamientoDTO crearEquipamiento(@Valid EquipamientoDTO dto) {
+    public EquipamientoDTO crearEquipamiento(EquipamientoDTO dto) {
         equipamientoValidator.validarEquipamiento(dto);
 
         // Unicidad por nombre (opcional, descomenta si quieres reforzar)
@@ -47,16 +59,17 @@ public class EquipamientoServiceimpl implements IEquipamientoService {
         //     throw new EquipamientoValidator.BusinessException("Ya existe un equipamiento con ese nombre.");
         // }
 
-        Equipamiento entidad = toEntity(dto);
-        entidad.setIdequipamiento(null);
-        entidad.setEstadobool(Boolean.TRUE);
+        Equipamiento equipamiento = convertToEntity(dto);
+        equipamiento.setIdEquipamiento(null);
+        equipamiento.setEstadobool(Boolean.TRUE);
+        Equipamiento guardada = equipamientoRepository.save(equipamiento);
 
-        return toDto(equipamientoRepository.save(entidad));
+        return convertToDTO(guardada);
     }
 
     @Override
     public EquipamientoDTO actualizarEquipamiento(Long id, @Valid EquipamientoDTO dto) {
-        Equipamiento existente = equipamientoRepository.findByIdequipamientoAndEstadoboolTrue(id)
+        Equipamiento existente = equipamientoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado con ID: " + id));
 
         equipamientoValidator.validarEquipamiento(dto);
@@ -66,45 +79,66 @@ public class EquipamientoServiceimpl implements IEquipamientoService {
         //     .filter(e -> !e.getIdequipamiento().equals(id))
         //     .ifPresent(e -> { throw new EquipamientoValidator.BusinessException("Ya existe un equipamiento con ese nombre."); });
 
-        existente.setNombreequipamiento(dto.getNombre());
-        existente.setTipoequipamiento(dto.getTipo());
+        existente.setNombreEquipamiento(dto.getNombreEquipamiento());
+        existente.setTipoEquipamiento(dto.getTipoEquipamiento());
         existente.setDescripcion(dto.getDescripcion());
         existente.setEstado(dto.getEstado());
-        existente.setUrlimagen(dto.getUrlImagen());
+        existente.setUrlImagen(dto.getUrlImagen());
         existente.setEstadobool(dto.getEstadobool());
 
-        return toDto(equipamientoRepository.save(existente));
+        return convertToDTO(equipamientoRepository.save(existente));
     }
 
     @Override
     public EquipamientoDTO eliminarEquipamiento(Long id) {
-        Equipamiento existente = equipamientoRepository.findByIdequipamientoAndEstadoboolTrue(id)
+        Equipamiento existente = equipamientoRepository.findByIdEquipamientoAndEstadoboolTrue(id)
                 .orElseThrow(() -> new RuntimeException("Equipamiento no encontrado con ID: " + id));
         existente.setEstadobool(Boolean.FALSE); // baja lógica
-        return toDto(equipamientoRepository.save(existente));
+        return convertToDTO(equipamientoRepository.save(existente));
+    }
+    @Override
+    @Transactional
+    public Equipamiento obtenerEquipamientoConBloqueo(Long id) {
+        Equipamiento equipamiento = equipamientoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Equipamiento  no encontrado con ID: " + id));
+        try {
+            Thread.sleep(15000); 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return equipamiento;
+    }
+
+    @Override
+    @Transactional
+    public void eliminarEquipamientoFisicamente(Long id) {
+        Equipamiento equipamiento = equipamientoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Equipamiento no encontrada con ID: " + id));
+
+        equipamientoRepository.delete(equipamiento);
     }
 
     // ---------- mapping ----------
-    private EquipamientoDTO toDto(Equipamiento e) {
+    private EquipamientoDTO convertToDTO(Equipamiento e) {
         return EquipamientoDTO.builder()
-                .idEquipamiento(e.getIdequipamiento())
-                .nombre(e.getNombreequipamiento())
-                .tipo(e.getTipoequipamiento())
+                .idEquipamiento(e.getIdEquipamiento())
+                .nombreEquipamiento(e.getNombreEquipamiento())
+                .tipoEquipamiento(e.getTipoEquipamiento())
                 .descripcion(e.getDescripcion())
                 .estado(e.getEstado())
-                .urlImagen(e.getUrlimagen())
+                .urlImagen(e.getUrlImagen())
                 .estadobool(e.getEstadobool())
                 .build();
     }
 
-    private Equipamiento toEntity(EquipamientoDTO d) {
+    private Equipamiento convertToEntity(EquipamientoDTO d) {
         return Equipamiento.builder()
-                .idequipamiento(d.getIdEquipamiento())
-                .nombreequipamiento(d.getNombre())
-                .tipoequipamiento(d.getTipo())
+                .idEquipamiento(d.getIdEquipamiento())
+                .nombreEquipamiento(d.getNombreEquipamiento())
+                .tipoEquipamiento(d.getTipoEquipamiento())
                 .descripcion(d.getDescripcion())
                 .estado(d.getEstado())
-                .urlimagen(d.getUrlImagen())
+                .urlImagen(d.getUrlImagen())
                 .estadobool(d.getEstadobool() != null ? d.getEstadobool() : Boolean.TRUE)
                 .build();
     }

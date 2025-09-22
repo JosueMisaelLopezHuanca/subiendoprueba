@@ -72,7 +72,7 @@ public class AreaDeportivaValidator {
 
     public void validarArea(AreaDeportivaDTO dto) {
         validarNombre(dto.getNombreArea());
-        validarDescripcion(dto.getDescripcion_area());
+        validarDescripcion(dto.getDescripcionArea());
         validarHoras(dto.getHoraInicioArea(), dto.getHoraFinArea());
         validarEstadoArea(dto.getEstadoArea());
         validarCoordenadas(dto.getLatitud(), dto.getLongitud());

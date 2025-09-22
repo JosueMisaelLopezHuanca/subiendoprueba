@@ -17,12 +17,12 @@ public class dispone {
     private disponeId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("id_Cancha")
+    @MapsId("idCancha")
     @JoinColumn(name = "id_cancha", referencedColumnName = "id_cancha", insertable = false, updatable = false)
     private Cancha cancha;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("id_Equipamiento")
+    @MapsId("idEquipamiento")
     @JoinColumn(name = "id_equipamiento", referencedColumnName = "id_equipamiento", insertable = false, updatable = false)
     private Equipamiento equipamiento;
 

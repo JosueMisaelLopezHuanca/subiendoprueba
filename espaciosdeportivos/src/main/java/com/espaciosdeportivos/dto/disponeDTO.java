@@ -23,3 +23,5 @@ public class disponeDTO implements Serializable{
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
     private Integer cantidad;
 }
+
+ 

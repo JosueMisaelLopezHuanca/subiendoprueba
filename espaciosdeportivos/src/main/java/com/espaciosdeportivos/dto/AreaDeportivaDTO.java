@@ -19,8 +19,8 @@ public class AreaDeportivaDTO implements Serializable{
     @NotBlank(message = "El nombre del área es obligatorio")
     private String nombreArea;
 
-    @Size(max = 400, message = "La descripción no puede tener más de 400 caracteres")
-    private String descripcion_area;
+    @Size(max = 600, message = "La descripción no puede tener más de 600 caracteres")
+    private String descripcionArea;
 
     @Email(message = "El email debe ser válido")
     private String emailArea;
@@ -41,10 +41,10 @@ public class AreaDeportivaDTO implements Serializable{
 
     private String urlImagen;
     
-    @NotBlank(message = "La latitud del área es obligatorio")
+    @NotNull(message = "La latitud del área es obligatorio")
     private Double latitud;
 
-    @NotBlank(message = "La longitud del área es obligatorio")
+    @NotNull(message = "La longitud del área es obligatorio")
     private Double longitud;
 
     @NotNull(message = "La dirección es obligatoria")

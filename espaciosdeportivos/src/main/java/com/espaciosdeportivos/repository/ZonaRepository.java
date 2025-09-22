@@ -16,11 +16,11 @@ public interface ZonaRepository extends JpaRepository<Zona, Long> {
     // Activo por id
     Optional<Zona> findByIdZonaAndEstadoTrue(Long idZona);
 
-    // Por macrodistrito (solo activos)
-    List<Zona> findByMacrodistrito_IdMacrodistritoAndEstadoTrue(Long idMacrodistrito);
+    // // Por macrodistrito (solo activos)
+    // List<Zona> findByMacrodistrito_IdMacrodistritoAndEstadoTrue(Long idMacrodistrito);
 
-    // (Opcional) Unicidad por nombre dentro de un macrodistrito
-    boolean existsByNombreIgnoreCaseAndMacrodistrito_IdMacrodistrito(String nombre, Long idMacrodistrito);
+    // // (Opcional) Unicidad por nombre dentro de un macrodistrito
+    // boolean existsByNombreIgnoreCaseAndMacrodistrito_IdMacrodistrito(String nombre, Long idMacrodistrito);
 }
 
 

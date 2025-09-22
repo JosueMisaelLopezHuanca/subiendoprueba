@@ -37,7 +37,7 @@ public class CanchaDTO implements Serializable {
     @JsonFormat(pattern = "HH:mm")
     private String horaInicio;
 
-    @NotBlank(message = "La hora de fin es obligatoria")
+    @NotBlank(message = "La hora de fin es obligatoria") 
     @JsonFormat(pattern = "HH:mm")
     private String horaFin;
 

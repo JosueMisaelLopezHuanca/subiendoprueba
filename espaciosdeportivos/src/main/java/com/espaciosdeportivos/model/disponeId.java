@@ -1,5 +1,7 @@
 package com.espaciosdeportivos.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -14,11 +16,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode 
-public class disponeId {
+public class disponeId implements Serializable{
     
     @Column(name = "id_cancha")
-    private Long idcancha;
+    private Long idCancha;
 
     @Column(name = "id_equipamiento")
-    private Long idequipamiento;
+    private Long idEquipamiento;
 }

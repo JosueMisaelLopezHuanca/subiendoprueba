@@ -80,4 +80,14 @@ public class QrController {
         qrService.eliminarQrFisicamente(id);
         return ResponseEntity.ok("QR eliminado físicamente");
     }
+
+    //K PA FRONT
+    @GetMapping("/reserva/{id}")
+    public ResponseEntity<List<QrDTO>> obtenerQrsPorReserva(@PathVariable Long id) {
+        logger.info("[QR] Inicio obtenerQrsPorReserva: {}", id);
+        List<QrDTO> qrs = qrService.obtenerQrsPorReserva(id);
+        logger.info("[QR] Fin obtenerQrsPorReserva");
+        return ResponseEntity.ok(qrs);
+    }
+
 }

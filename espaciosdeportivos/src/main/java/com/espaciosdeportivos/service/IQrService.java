@@ -20,4 +20,7 @@ public interface IQrService {
     Qr obtenerQrConBloqueo(Long id);
 
     void eliminarQrFisicamente(Long id);
+
+    List<QrDTO> obtenerQrsPorReserva(Long idReserva);
+
 }

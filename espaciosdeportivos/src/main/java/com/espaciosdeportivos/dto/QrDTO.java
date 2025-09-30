@@ -40,5 +40,10 @@ public class QrDTO implements Serializable {
     @NotNull(message = "El ID del invitado es obligatorio")
     private Long idInvitado;
 
+     // Nuevos campos para visualización
+    private UsuarioControlDTO usuarioControl;
+    private InvitadoDTO invitado;
+    private ReservaDTO reserva;
+    private String nombreCliente;
     
 }

@@ -30,4 +30,8 @@ public interface QrRepository extends JpaRepository<Qr, Long> {
 
     // Busca QRs por ID de usuario de control
     List<Qr> findByUsuarioControl_IdPersona(Long idUsuarioControl);
+
+    //k pa front
+    List<Qr> findByReservaIdReserva(Long idReserva);
+
 }

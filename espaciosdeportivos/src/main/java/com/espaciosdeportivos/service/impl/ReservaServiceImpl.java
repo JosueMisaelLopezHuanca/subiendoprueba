@@ -6,9 +6,11 @@ import com.espaciosdeportivos.model.Reserva;
 import com.espaciosdeportivos.repository.ReservaRepository;
 import com.espaciosdeportivos.repository.ClienteRepository;
 import com.espaciosdeportivos.service.IReservaService;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +44,7 @@ public class ReservaServiceImpl implements IReservaService {
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + dto.getClienteId()));
 
         return Reserva.builder()
+                .idReserva(dto.getIdReserva()) // ← clave para PUT
                 .fechaCreacion(dto.getFechaCreacion())
                 .fechaReserva(dto.getFechaReserva())
                 .horaInicio(dto.getHoraInicio())
@@ -55,7 +58,9 @@ public class ReservaServiceImpl implements IReservaService {
 
     @Override
     public List<ReservaDTO> listarTodas() {
-        return reservaRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+        return reservaRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -69,7 +74,6 @@ public class ReservaServiceImpl implements IReservaService {
     public ReservaDTO crear(ReservaDTO dto) {
         validarFechaReserva(dto.getFechaReserva());
 
-        // Validar solapamiento de horarios (simplificado, puedes mejorar usando canchas específicas)
         if (!reservaRepository.findByFechaReservaAndHoraInicioBeforeAndHoraFinAfter(
                 dto.getFechaReserva(), dto.getHoraFin(), dto.getHoraInicio()
         ).isEmpty()) {

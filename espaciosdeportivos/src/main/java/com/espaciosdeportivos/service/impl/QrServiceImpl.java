@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +111,15 @@ public class QrServiceImpl implements IQrService {
         qrRepository.delete(existente);
     }
 
+    //k pa front
+    @Override
+        public List<QrDTO> obtenerQrsPorReserva(Long idReserva) {
+        List<Qr> qrs = qrRepository.findByReservaIdReserva(idReserva);
+        return qrs.stream().map(this::convertToDto).collect(Collectors.toList());
+        }
+
+
+
     @Override
     public Qr obtenerQrConBloqueo(Long id) {
         Qr qr = qrRepository.findById(id)
@@ -150,4 +160,21 @@ public class QrServiceImpl implements IQrService {
                 .usuarioControl(usuarioControl)
                 .build();
     }
+
+    //k pa front
+   private QrDTO convertToDto(Qr qr) {
+    return QrDTO.builder()
+        .idQr(qr.getIdQr())
+        .codigoQr(qr.getCodigoQr())
+        .fechaGeneracion(qr.getFechaGeneracion())
+        .fechaExpiracion(qr.getFechaExpiracion())
+        .estado(qr.getEstado())
+        .descripcion(qr.getDescripcion())
+        .idUsuarioControl(qr.getUsuarioControl() != null ? qr.getUsuarioControl().getIdPersona() : null)
+        .idReserva(qr.getReserva() != null ? qr.getReserva().getIdReserva() : null)
+        .idInvitado(qr.getInvitado() != null ? qr.getInvitado().getIdPersona() : null)
+        .build();
+}
+
+
 }

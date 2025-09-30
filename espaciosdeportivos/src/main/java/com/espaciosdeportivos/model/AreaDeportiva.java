@@ -34,8 +34,8 @@ public class AreaDeportiva {
     @Column(name = "hora_fin_area")
     private String horaFinArea;
 
-    @Column(name = "estado_area", nullable = false, length = 100)
-    private String estadoArea;
+    //@Column(name = "estado_area", nullable = false, length = 100)
+    //private String estadoArea;
 
     @Column(name = "url_imagen", length = 800)
     private String urlImagen;
@@ -53,11 +53,12 @@ public class AreaDeportiva {
     @JoinColumn(name = "id_zona")
     private Zona zona;
 
-    @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cancha> cancha;
-
     @ManyToOne
     @JoinColumn(name = "id_administrador", referencedColumnName = "id_persona")
     private Administrador administrador;
+
+    @OneToMany(mappedBy = "areaDeportiva", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cancha> cancha;
+
     
 }

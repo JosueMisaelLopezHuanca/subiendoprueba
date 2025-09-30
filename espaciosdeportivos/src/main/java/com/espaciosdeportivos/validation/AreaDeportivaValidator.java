@@ -13,13 +13,13 @@ public class AreaDeportivaValidator {
         if (nombre == null || nombre.isBlank()) {
             throw new BusinessException("El nombre del área es obligatorio.");
         }
-        if (nombre.length() > 100) {
+        if (nombre.length() > 200) {
             throw new BusinessException("El nombre del área no puede exceder 100 caracteres.");
         }
     }
 
     public void validarDescripcion(String descripcion) {
-        if (descripcion != null && descripcion.length() > 400) {
+        if (descripcion != null && descripcion.length() > 600) {
             throw new BusinessException("La descripción no puede exceder 400 caracteres.");
         }
     }
@@ -28,20 +28,14 @@ public class AreaDeportivaValidator {
         if (inicio == null || fin == null) {
             throw new BusinessException("Las horas de inicio y fin son obligatorias.");
         }
-        if (!fin.isAfter(inicio)) {
-            throw new BusinessException("La hora de fin debe ser posterior a la hora de inicio.");
+        // Validar rango válido de horas (aunque LocalTime ya garantiza esto)
+        if (inicio.isBefore(LocalTime.MIN) || inicio.isAfter(LocalTime.MAX) ||
+            fin.isBefore(LocalTime.MIN) || fin.isAfter(LocalTime.MAX)) {
+            throw new BusinessException("Las horas deben estar entre 00:00 y 23:59.");
         }
     }
 
-    public void validarEstadoArea(String estadoArea) {
-        if (estadoArea == null || estadoArea.isBlank()) {
-            throw new BusinessException("El estado del área (texto) es obligatorio.");
-        }
-        if (estadoArea.length() > 100) {
-            throw new BusinessException("El estado del área no puede exceder 100 caracteres.");
-        }
-        // Opcional: validar contra un conjunto permitido (ABIERTA/CERRADA/MANTENIMIENTO)
-    }
+
 
     public void validarCoordenadas(Double lat, Double lng) {
         if (lat == null || lng == null) {
@@ -74,7 +68,6 @@ public class AreaDeportivaValidator {
         validarNombre(dto.getNombreArea());
         validarDescripcion(dto.getDescripcionArea());
         validarHoras(dto.getHoraInicioArea(), dto.getHoraFinArea());
-        validarEstadoArea(dto.getEstadoArea());
         validarCoordenadas(dto.getLatitud(), dto.getLongitud());
         validarIds(dto.getIdZona(), dto.getIdAdministrador());
         validarEstado(dto.getEstado());

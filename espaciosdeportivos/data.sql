@@ -105,16 +105,40 @@ INSERT INTO macrodistrito (nombre_macrodistrito, descripcion, estado) VALUES
 ('Oeste', 'Zona con parques y áreas verdes', true);
 
 
---areadeportiva
-INSERT INTO zona (id_zona, nombre_zona, descripcion, estado, id_macrodistrito) VALUES
-(1, 'Zona A', 'Área deportiva principal', true, 1),
-(2, 'Zona B', 'Cancha de fútbol', true, 1),
-(3, 'Zona C', 'Piscina olímpica', true, 2),
-(4, 'Zona D', 'Gimnasio municipal', true, 2),
-(5, 'Zona E', 'Pista de atletismo', true, 3),
-(6, 'Zona F', 'Área de yoga y pilates', true, 3),
-(7, 'Zona G', 'Zona de entrenamiento funcional', true, 1),
-(8, 'Zona H', 'Área de recreación familiar', true, 2);
+--zona
+INSERT INTO zona (nombre_zona, descripcion, estado, id_macrodistrito) VALUES
+('Zona A', 'Área deportiva principal', true, 1),
+('Zona B', 'Cancha de fútbol', true, 1),
+('Zona C', 'Piscina olímpica', true, 2),
+('Zona D', 'Gimnasio municipal', true, 2),
+('Zona E', 'Pista de atletismo', true, 3),
+('Zona F', 'Área de yoga y pilates', true, 3),
+('Zona G', 'Zona de entrenamiento funcional', true, 1),
+('Zona H', 'Área de recreación familiar', true, 2);
+
+--areadedeportiva
+
+INSERT INTO AreaDeportiva (
+  nombre_area, descripcion_area, email_area, telefono_area,
+  hora_inicio_area, hora_fin_area, url_imagen,
+  latitud, longitud, id_zona, id_administrador, estado
+) VALUES
+('Cancha Sintética Norte', 'Cancha de fútbol 8 con césped sintético.', 'contacto1@deportes.com', '70123456',
+ '08:00:00', '22:00:00', 'cancha_norte.jpg', -16.500, -68.150, 1, 1, TRUE),
+
+('Coliseo Municipal', 'Coliseo techado para básquet y voleibol.', 'coliseo@deportes.com', '70234567',
+ '07:00:00', '21:00:00', 'coliseo_muni.jpg', -16.495, -68.132, 2, 2, TRUE),
+
+('Piscina Olímpica', 'Piscina semiolímpica climatizada.', 'piscina@deportes.com', '70345678',
+ '06:00:00', '20:00:00', 'piscina.jpg', -16.510, -68.140, 3, 1, TRUE),
+
+('Cancha de Tenis Sur', 'Cancha de tenis de arcilla.', 'tenis@deportes.com', '70456789',
+ '09:00:00', '19:00:00', 'tenis_sur.jpg', -16.520, -68.155, 1, 2, TRUE),
+
+('Gimnasio Central', 'Área equipada con pesas y máquinas.', 'gym@deportes.com', '70567890',
+ '05:30:00', '23:00:00', 'gimnasio.jpg', -16.480, -68.125, 2, 3, TRUE);
+
+
 
 --cancha
 INSERT INTO cancha (

@@ -36,8 +36,8 @@ public class AreaDeportivaDTO implements Serializable{
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horaFinArea;
 
-    @NotBlank(message = "El estado del área es obligatorio")
-    private String estadoArea;
+    //@NotBlank(message = "El estado del área es obligatorio")
+    //private String estadoArea;
 
     private String urlImagen;
     
@@ -47,6 +47,9 @@ public class AreaDeportivaDTO implements Serializable{
     @NotNull(message = "La longitud del área es obligatorio")
     private Double longitud;
 
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estado;
+
     @NotNull(message = "La dirección es obligatoria")
     @Positive(message = "El ID de la zona debe ser un valor positivo")
     private Long idZona;
@@ -55,7 +58,5 @@ public class AreaDeportivaDTO implements Serializable{
     @Positive(message = "El ID del administrador debe ser un valor positivo")   
     private Long idAdministrador;
 
-    @NotNull(message = "El estado es obligatorio")
-    private Boolean estado;
 
 }

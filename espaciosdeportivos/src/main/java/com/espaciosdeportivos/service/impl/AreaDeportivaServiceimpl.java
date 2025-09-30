@@ -100,7 +100,7 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
         existente.setTelefonoArea(dto.getTelefonoArea());
         existente.setHoraInicioArea(dto.getHoraInicioArea() != null ? dto.getHoraInicioArea().toString() : null);
         existente.setHoraFinArea(dto.getHoraFinArea() != null ? dto.getHoraFinArea().toString() : null);
-        existente.setEstadoArea(dto.getEstadoArea());
+        //existente.setEstadoArea(dto.getEstadoArea());
         existente.setUrlImagen(dto.getUrlImagen());
         existente.setLatitud(dto.getLatitud());
         existente.setLongitud(dto.getLongitud());
@@ -155,7 +155,7 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
                 .telefonoArea(a.getTelefonoArea())
                 .horaInicioArea(parseTime(a.getHoraInicioArea()))
                 .horaFinArea(parseTime(a.getHoraFinArea()))
-                .estadoArea(a.getEstadoArea())
+                //.estadoArea(a.getEstadoArea())
                 .urlImagen(a.getUrlImagen())
                 .latitud(a.getLatitud())
                 .longitud(a.getLongitud())
@@ -179,7 +179,7 @@ public class AreaDeportivaServiceImpl implements IAreaDeportivaService {
                 .telefonoArea(d.getTelefonoArea())
                 .horaInicioArea(d.getHoraInicioArea() != null ? d.getHoraInicioArea().toString() : null)
                 .horaFinArea(d.getHoraFinArea() != null ? d.getHoraFinArea().toString() : null)
-                .estadoArea(d.getEstadoArea())
+                //.estadoArea(d.getEstadoArea())
                 .urlImagen(d.getUrlImagen())
                 .latitud(d.getLatitud())
                 .longitud(d.getLongitud())
